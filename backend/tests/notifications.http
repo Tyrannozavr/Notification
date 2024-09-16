@@ -2,6 +2,10 @@
 GET http://127.0.0.1:8000/api/notifications/
 Authorization: Bearer {{token}}
 ###
+GET http://127.0.0.1:8000/api/notifications/tags/hello_world/
+Authorization: Bearer {{token}}
+###
+
 POST http://127.0.0.1:8000/api/notifications/
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -16,7 +20,7 @@ Content-Type: application/json
   ]
 }
 ###
-PATCH http://127.0.0.1:8000/api/notifications/1/
+PATCH http://127.0.0.1:8000/api/notifications/3/
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
@@ -25,7 +29,9 @@ Content-Type: application/json
   "description": "We are excited to announce the release of our new feature!",
   "tags": [
     "update",
-    "hello_world"
+    "hello_world",
+    "most_important",
+    "study"
   ]
 }
 ###
