@@ -1,4 +1,4 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkbWl2IiwiZXhwIjoxNzI2NTEzNTUwfQ.NbVegK4rtJhq-Fayvo754gayh2bPZ1vtvXVDEQpJ4qc
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkbWl2IiwiZXhwIjoxNzI2NTIxMjk2fQ.PgPBHuMkMgMcJGFzHsFE1rhehuRE2ZvsCpky7NlOl14
 GET http://127.0.0.1:8000/api/notifications/
 Authorization: Bearer {{token}}
 ###
@@ -16,8 +16,7 @@ Content-Type: application/json
   ]
 }
 ###
-
-PATCH http://127.0.0.1:8000/api/notifications/4/
+PATCH http://127.0.0.1:8000/api/notifications/1/
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
