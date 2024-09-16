@@ -1,3 +1,5 @@
+import hashlib
+import hmac
 from datetime import datetime, timezone, timedelta
 from typing import Annotated
 
@@ -70,9 +72,12 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Se
         raise credentials_exception
     return user
 
-# async def get_current_active_user(
-#         current_user: Annotated[User, Depends(get_current_user)],
-# ):
-#     if current_user.disabled:
-#         raise HTTPException(status_code=400, detail="Inactive user")
-#     return current_user
+def check_telegram_authorization(auth_data: dict, bot_token: str):
+    check_hash = auth_data['hash']
+    del auth_data['hash']
+    data_check_arr = [f"{key}={value}" for key, value in auth_data.items()]
+    data_check_arr.sort()
+    data_check_string = "\n".join(data_check_arr)
+    secret_key = hashlib.sha256(bot_token.encode()).digest()
+    hash_signature = hmac.new(secret_key, msg=data_check_string.encode(), digestmod=hashlib.sha256).hexdigest()
+    return hash_signature == check_hash

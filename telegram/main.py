@@ -1,22 +1,16 @@
 import asyncio
 import logging
 import sys
-from os import getenv
-from random import randint
 
-from aiogram import Bot, Dispatcher, html, types, F
+from aiogram import Bot, Dispatcher, types, F
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
-from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-# Bot token can be obtained via https://t.me/BotFather
-from dotenv import load_dotenv
-
-
-load_dotenv('../.env')
-TOKEN = getenv("BOT_TOKEN")
+from data import BOT_TOKEN
+from services import link_account
 
 # All handlers should be attached to the Router (or Dispatcher)
 
@@ -43,8 +37,16 @@ async def command_start_handler(message: Message):
 @dp.callback_query(F.data.startswith("random_value:"))
 async def send_random_value(callback: types.CallbackQuery):
     access_token = callback.data.split(':')[1]
-    print('access_token:', access_token)
-    await callback.message.answer("Успешно привязан!")
+    # print('access_token:', access_token)
+    user_data = callback.from_user.__dict__
+    data = {**user_data, "access_token": access_token}
+    response = link_account(data=data, bot_token=BOT_TOKEN)
+    # print('user_data:', user_data)
+    if response == 'success':
+        response_text = 'Успешно привязан!'
+    else:
+        response_text = response
+    await callback.message.answer(response_text)
 
 
 @dp.message()
@@ -64,7 +66,7 @@ async def echo_handler(message: Message) -> None:
 
 async def main() -> None:
     # Initialize Bot instance with default bot properties which will be passed to all API calls
-    bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+    bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
     # And the run events dispatching
     await dp.start_polling(bot)

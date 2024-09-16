@@ -20,6 +20,7 @@ class UserLogin(BaseModel):
 class TagBase(BaseModel):
     name: str  # Assuming each Tag has a name attribute
 
+
 class NotificationBase(BaseModel):
     title: str
     description: str
@@ -30,9 +31,14 @@ class NotificationCreate(BaseModel):
     description: str
     tags: Optional[List[str]] = []  # List of tag names (strings)
 
+
 class NotificationResponse(NotificationBase):
     id: int
     tags: Optional[List[TagBase]] = []  # List of tag names (strings)
 
     class Config:
         from_attributes = True
+
+
+class Payload(BaseModel):
+    data: dict

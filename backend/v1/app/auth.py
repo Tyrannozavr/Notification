@@ -6,11 +6,13 @@ from fastapi import HTTPException
 from fastapi.routing import APIRouter
 from sqlalchemy.orm.session import Session
 
+from backend.core import settings
 from backend.core.database import get_db
 from backend.core.models import User
-from backend.core.schemas import Token, UserLogin
+from backend.core.schemas import Token, UserLogin, Payload
 from backend.core.settings import ACCESS_TOKEN_EXPIRE_MINUTES
-from backend.services.Auth import create_access_token, verify_password, get_password_hash, get_user_by_username
+from backend.services.Auth import create_access_token, verify_password, get_password_hash, get_user_by_username, \
+    check_telegram_authorization
 
 router = APIRouter()
 
@@ -56,3 +58,20 @@ async def login(form_data: UserLogin, db: Session = Depends(get_db)):
     )
 
     return {"access_token": access_token, "token_type": "bearer"}
+
+@router.get("/telegram/link")
+def telegram_link():
+    access_token = 'test_access_token'
+    return f"<a href='https://t.me/notification_dmiv_bot?start={access_token}'>Telegram</a>"
+
+
+
+
+@router.post("/telegram/link")
+async def telegram_link(payload: Payload, db: Session = Depends(get_db)):
+    BOT_TOKEN = settings.BOT_TOKEN
+    is_from_telegram = check_telegram_authorization(auth_data=payload.data, bot_token=BOT_TOKEN)
+    if is_from_telegram:
+        return "OK"
+    else:
+        return HTTPException(status_code=401, detail="Telegram authorization failed")
