@@ -1,8 +1,8 @@
 from dotenv import load_dotenv
 from fastapi import FastAPI
 
-from backend.core.db import init_db
-from backend.v1.router.main import api_router
+from backend.core.database import init_db
+from backend.v1.app.router import api_router
 
 load_dotenv('../.env')
 

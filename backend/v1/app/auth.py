@@ -6,7 +6,7 @@ from fastapi import HTTPException
 from fastapi.routing import APIRouter
 from sqlalchemy.orm.session import Session
 
-from backend.core.db import get_db
+from backend.core.database import get_db
 from backend.core.models import User
 from backend.core.schemas import Token, UserLogin
 from backend.core.settings import ACCESS_TOKEN_EXPIRE_MINUTES
