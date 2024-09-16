@@ -9,12 +9,12 @@ GET http://127.0.0.1:8000/hello/User
 Accept: application/json
 
 ###
-POST http://127.0.0.1:8000/api/auth/register
-Accept: application/json
+POST http://127.0.0.1:8000/api/auth/register/
+Content-Type: application/json
 
 {
-    "username": "dmiv",
-    "password": "123456"
+  "username": "dmiv",
+  "password": "123456"
 }
 ###
 
@@ -31,5 +31,3 @@ GET http://127.0.0.1:8000/users/me
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huZG9lIiwiZXhwIjoxNzI2NDkzNDg4fQ.0-Pu3fU9_wBytNifkOVGnMidX107c3LE6Tc2M5db_nU
 
 ###
-
-

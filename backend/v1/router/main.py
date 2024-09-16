@@ -1,0 +1,6 @@
+from fastapi.routing import APIRouter
+
+from backend.v1.router import auth
+
+api_router = APIRouter()
+api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
