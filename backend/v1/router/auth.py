@@ -13,6 +13,8 @@ from backend.core.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 from backend.services.Auth import create_access_token, verify_password, get_password_hash, get_user_by_username
 
 router = APIRouter()
+
+
 @router.post("/register/")
 def register_user(user: UserLogin, db: Session = Depends(get_db)):
     # Hash password here (use your preferred hashing method)
@@ -37,15 +39,15 @@ def register_user(user: UserLogin, db: Session = Depends(get_db)):
     return {"username": new_user.username, "full_name": 'new_user.full_name'}
 
 
-# @router.post("/token", response_model=Token)
-# async def login(form_data: UserLogin):
-#     user = fake_users_db.get(form_data.username)
-#     if not user or not verify_password(form_data.password, user.get('hashed_password')):
-#         raise HTTPException(status_code=401, detail="Incorrect username or password")
-#
-#     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-#     access_token = create_access_token(
-#         data={"sub": user.get('username')}, expires_delta=access_token_expires
-#     )
-#
-#     return {"access_token": access_token, "token_type": "bearer"}
+@router.post("/token", response_model=Token)
+async def login(form_data: UserLogin, db: Session = Depends(get_db)):
+    user = get_user_by_username(db, form_data.username)
+    if not user or not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Incorrect username or password")
+
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.username}, expires_delta=access_token_expires
+    )
+
+    return {"access_token": access_token, "token_type": "bearer"}

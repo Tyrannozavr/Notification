@@ -1,10 +1,8 @@
 from dotenv import load_dotenv
-from fastapi import Depends
 from fastapi import FastAPI
 
-from backend.core.db import init_db, SessionLocal
+from backend.core.db import init_db
 from backend.v1.router.main import api_router
-from services.Auth import get_current_active_user
 
 load_dotenv('../.env')
 
