@@ -60,3 +60,10 @@ async def login(form_data: UserLogin):
     )
 
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@app.get("/users/me", response_model=User)
+async def read_users_me(current_user: User = Depends(get_current_active_user)):
+    return current_user
+
+

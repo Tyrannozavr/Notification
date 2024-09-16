@@ -13,6 +13,7 @@ class TokenData(BaseModel):
 class User(BaseModel):
     username: str
     hashed_password: str
+    disabled: bool
 
 
 class UserLogin(BaseModel):
@@ -22,3 +23,5 @@ class UserLogin(BaseModel):
 
 class UserInDB(User):
     hashed_password: str
+
+

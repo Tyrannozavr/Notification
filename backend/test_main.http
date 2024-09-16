@@ -26,4 +26,10 @@ Accept: application/json
     "password": "123456"
 }
 ###
+# curl -X GET "http://127.0.0.1:8000/users/me" -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+GET http://127.0.0.1:8000/users/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huZG9lIiwiZXhwIjoxNzI2NDkzNDg4fQ.0-Pu3fU9_wBytNifkOVGnMidX107c3LE6Tc2M5db_nU
+
+###
+
 
