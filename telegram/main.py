@@ -26,7 +26,7 @@ async def command_start_handler(message: Message):
     builder = InlineKeyboardBuilder()
     builder.add(types.InlineKeyboardButton(
         text="Нажми меня",
-        callback_data=f"random_value:{access_token}",
+        callback_data=f"link_token:{access_token}",
     )
     )
     await message.answer(
@@ -34,15 +34,16 @@ async def command_start_handler(message: Message):
         reply_markup=builder.as_markup()
     )
 
-@dp.callback_query(F.data.startswith("random_value:"))
-async def send_random_value(callback: types.CallbackQuery):
+@dp.callback_query(F.data.startswith("link_token:"))
+async def link_account_handler(callback: types.CallbackQuery):
     access_token = callback.data.split(':')[1]
     # print('access_token:', access_token)
     user_data = callback.from_user.__dict__
-    data = {**user_data, "access_token": access_token}
+    data = {**user_data, "link_token": access_token}
     response = link_account(data=data, bot_token=BOT_TOKEN)
     # print('user_data:', user_data)
     if response == 'success':
+        await callback.message.edit_reply_markup(reply_markup=None)
         response_text = 'Успешно привязан!'
     else:
         response_text = response
@@ -75,7 +76,3 @@ async def main() -> None:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
     asyncio.run(main())
-
-    # https: // t.me / sloters_club_bot?start = 01
-    # a73805 - d146 - 4530 - 84e6 - 4
-    # f82aa0fe688
