@@ -36,7 +36,12 @@ def register_user(user: UserLogin, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
 
-    return {"username": new_user.username, "full_name": 'new_user.full_name'}
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.username}, expires_delta=access_token_expires
+    )
+
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
 @router.post("/token", response_model=Token)

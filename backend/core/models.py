@@ -1,5 +1,7 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Boolean
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 from sqlalchemy.sql.schema import Table
 
 from backend.core.database import Base
@@ -43,3 +45,7 @@ class Notification(Base):
 
     owner = relationship("User", back_populates="notifications")
     tags = relationship("Tag", secondary=notification_tags, back_populates="notifications")
+
+    # New fields for timestamps
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())

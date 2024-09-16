@@ -13,7 +13,7 @@ POST http://127.0.0.1:8000/api/auth/register/
 Content-Type: application/json
 
 {
-  "username": "dmiv",
+  "username": "dmiv2",
   "password": "123456"
 }
 ###
@@ -25,11 +25,6 @@ Accept: application/json
     "username": "dmiv",
     "password": "123456"
 }
-###
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkbWl2IiwiZXhwIjoxNzI2NTA4OTM5fQ.nGVBs2ZW0SEIDOVb29qpHZlSwQI86OD2dpYR0bHpyTg
-GET http://127.0.0.1:8000/api/notifications/
-Authorization: Bearer {{token}}
 
-###
 
 

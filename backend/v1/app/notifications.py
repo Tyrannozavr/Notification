@@ -11,6 +11,7 @@ from backend.core.models import User, Notification
 from backend.core.database import get_db  # Assume you have a function to get the DB session
 from backend.core.schemas import NotificationCreate, NotificationResponse  # Import your schemas
 from backend.services.Auth import get_current_user
+from backend.services.notifications import create_notification
 
 router = APIRouter()
 
@@ -25,13 +26,12 @@ async def read_notifications(current_user: User = Depends(get_current_user), db:
 
 
 @router.post("/", response_model=NotificationResponse)
-async def create_notification(notification: NotificationCreate, current_user: User = Depends(get_current_user),
-                              db: Session = Depends(get_db)):
-    new_notification = Notification(**notification.dict(), owner_id=current_user.id)
-    db.add(new_notification)
-    db.commit()
-    db.refresh(new_notification)
-    return new_notification
+async def create_notification_endpoint(
+    notification: NotificationCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    return create_notification(db=db, notification=notification, owner_id=current_user.id)
 
 
 @router.delete("/{id}", response_model=NotificationResponse)
