@@ -9,21 +9,22 @@ from passlib.context import CryptContext
 from starlette import status
 
 import core.settings
-from core.models import UserInDB, TokenData, User
+from core.models import User
+from core.schemas import UserInDB, TokenData
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 
 fake_users_db = {
     "johndoe": {
         "username": "johndoe",
         "full_name": "John Doe",
         "email": "johndoe@example.com",
-        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
+        "hashed_password": "$2b$12$cnOzWvbUdebjW9w10RCTne9fEVXc4EEFsQlcPFQLKoyzUmL.8gFbi",
         "disabled": False,
     }
 }
-
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
@@ -43,9 +44,10 @@ def authenticate_user(fake_db, username: str, password: str):
     user = get_user(fake_db, username)
     if not user:
         return False
-    if not verify_password(password, user.hashed_password):
+    if not verify_password(password, user.password):
         return False
     return user
+
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):

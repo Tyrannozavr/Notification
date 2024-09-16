@@ -12,13 +12,13 @@ class TokenData(BaseModel):
 
 class User(BaseModel):
     username: str
-    email: str | None = None
-    full_name: str | None = None
-    disabled: bool | None = None
+    hashed_password: str
+
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
 
 
 class UserInDB(User):
     hashed_password: str
-
-
-
