@@ -1,37 +1,28 @@
-import os
-
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from fastapi.routing import APIRouter
 
 load_dotenv('../.env')
 
 app = FastAPI()
 
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+from backend.v1.router import auth
 
 
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
-@app.get('/token')
-async def get_token():
-    return {'hello': "world"}
+api_router = APIRouter()
+api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
+app.include_router(api_router, prefix="/api", tags=["api"])
+
 
 
 from datetime import timedelta
-from typing import Annotated
 
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import Depends, HTTPException
 
-from core.models import User
 from core.schemas import Token, User, UserLogin, UserInDB
 from core.settings import ACCESS_TOKEN_EXPIRE_MINUTES
-from main import app
-from services.Auth import authenticate_user, fake_users_db, create_access_token, get_current_active_user, \
+from services.Auth import fake_users_db, create_access_token, get_current_active_user, \
     verify_password, get_password_hash
 
 
