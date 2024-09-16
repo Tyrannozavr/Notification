@@ -50,7 +50,7 @@ async def update_notification(notification_id: int, notification: NotificationCr
     return existing_notification
 
 
-@router.delete("/{id}", response_model=NotificationResponse)
+@router.delete("/{notification_id}/")
 async def delete_notification(notification_id: int, current_user: User = Depends(get_current_user),
                               db: Session = Depends(get_db)):
     notification = db.query(Notification).filter(Notification.id == notification_id,
@@ -60,4 +60,4 @@ async def delete_notification(notification_id: int, current_user: User = Depends
 
     db.delete(notification)
     db.commit()
-    return notification
+    return status.HTTP_200_OK

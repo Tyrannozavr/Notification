@@ -29,3 +29,6 @@ Content-Type: application/json
   ]
 }
 ###
+DELETE http://127.0.0.1:8000/api/notifications/4/
+Authorization: Bearer {{token}}
+Content-Type: application/json
