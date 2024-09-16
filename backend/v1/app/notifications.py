@@ -11,7 +11,7 @@ from backend.core.models import User, Notification
 from backend.core.database import get_db  # Assume you have a function to get the DB session
 from backend.core.schemas import NotificationCreate, NotificationResponse  # Import your schemas
 from backend.services.Auth import get_current_user
-from backend.services.notifications import create_notification
+from backend.services.notifications import create_notification, get_or_create_tag
 
 router = APIRouter()
 
@@ -33,6 +33,27 @@ async def create_notification_endpoint(
 ):
     return create_notification(db=db, notification=notification, owner_id=current_user.id)
 
+@router.patch("/{notification_id}/", response_model=NotificationResponse)
+async def update_notification(notification_id: int, notification: NotificationCreate, current_user: User = Depends(get_current_user),
+                              db: Session = Depends(get_db)):
+    existing_notification = db.query(Notification).filter(Notification.id == notification_id,
+                                                          Notification.owner_id == current_user.id).first()
+    if not existing_notification:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Notification not found")
+
+    for key, value in notification.dict().items():
+        if value:
+            if key == 'tags':
+                # print(notification.tags, type(notification.tags))
+                # existing_notification.tags = value
+                value = [get_or_create_tag(db, tag_name) for tag_name in value]
+                # print(existing_notification.tags, value)
+            # else:
+            setattr(existing_notification, key, value)
+
+    db.commit()
+    db.refresh(existing_notification)
+    return existing_notification
 
 @router.delete("/{id}", response_model=NotificationResponse)
 async def delete_notification(notification_id: int, current_user: User = Depends(get_current_user),
@@ -47,17 +68,4 @@ async def delete_notification(notification_id: int, current_user: User = Depends
     return notification
 
 
-@router.put("/{id}", response_model=NotificationResponse)
-async def update_notification(notification_id: int, notification: NotificationCreate, current_user: User = Depends(get_current_user),
-                              db: Session = Depends(get_db)):
-    existing_notification = db.query(Notification).filter(Notification.id == notification_id,
-                                                          Notification.owner_id == current_user.id).first()
-    if not existing_notification:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Notification not found")
 
-    for key, value in notification.dict().items():
-        setattr(existing_notification, key, value)
-
-    db.commit()
-    db.refresh(existing_notification)
-    return existing_notification

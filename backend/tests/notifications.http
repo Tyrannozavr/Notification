@@ -1,4 +1,4 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkbWl2MiIsImV4cCI6MTcyNjUxMDc3NX0.kO9WhHwxWurKJk-1Cxw6UCjm_PQixZQ9c1DKORt7pN0
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkbWl2IiwiZXhwIjoxNzI2NTEzNTUwfQ.NbVegK4rtJhq-Fayvo754gayh2bPZ1vtvXVDEQpJ4qc
 GET http://127.0.0.1:8000/api/notifications/
 Authorization: Bearer {{token}}
 ###
@@ -13,6 +13,20 @@ Content-Type: application/json
     "update",
     "feature",
     "release"
+  ]
+}
+###
+
+PATCH http://127.0.0.1:8000/api/notifications/4/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "New Feature Release 2.0",
+  "description": "We are excited to announce the release of our new feature!",
+  "tags": [
+    "update",
+    "hello_world"
   ]
 }
 ###
