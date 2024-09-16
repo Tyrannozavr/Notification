@@ -32,16 +32,19 @@ async def command_start_handler(message: Message):
     builder = InlineKeyboardBuilder()
     builder.add(types.InlineKeyboardButton(
         text="Нажми меня",
-        callback_data="random_value")
+        callback_data=f"random_value:{access_token}",
+    )
     )
     await message.answer(
-        "Нажмите на кнопку, чтобы бот отправил число от 1 до 10",
+        "Чтобы привязать аккаунт нажмите кнопку",
         reply_markup=builder.as_markup()
     )
 
-@dp.callback_query(F.data == "random_value")
+@dp.callback_query(F.data.startswith("random_value:"))
 async def send_random_value(callback: types.CallbackQuery):
-    await callback.message.answer(str(randint(1, 10)))
+    access_token = callback.data.split(':')[1]
+    print('access_token:', access_token)
+    await callback.message.answer("Успешно привязан!")
 
 
 @dp.message()
