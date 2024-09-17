@@ -1,9 +1,7 @@
 import hashlib
 import hmac
-import os
 
 import requests
-from dotenv import load_dotenv
 
 from data import BASE_URL
 
@@ -17,6 +15,7 @@ def link_account(data: dict, bot_token: str) -> str:
     else:
         return response.text
 
+
 def encode_data(data: dict, bot_token: str):
     data_check_arr = [f"{key}={value}" for key, value in data.items()]
     data_check_arr.sort()
@@ -25,3 +24,26 @@ def encode_data(data: dict, bot_token: str):
     hash_signature = hmac.new(secret_key, msg=data_check_string.encode(), digestmod=hashlib.sha256).hexdigest()
     data['hash'] = hash_signature
     return data
+
+
+async def store_user_access_token(user_id: int, token: str):
+    try:
+        # Check if the user already exists in the database
+        user_token = session.query(UserToken).filter_by(user_id=user_id).first()
+
+        if user_token:
+            # Update existing token
+            user_token.access_token = token
+        else:
+            # Create a new entry for the user
+            user_token = UserToken(user_id=user_id, access_token=token)
+            session.add(user_token)
+
+        # Commit the changes to the database
+        session.commit()
+    except IntegrityError:
+        # Handle unique constraint violation (if necessary)
+        session.rollback()
+        print(f"User ID {user_id} already exists.")
+    finally:
+        session.close()

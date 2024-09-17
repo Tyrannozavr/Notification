@@ -6,6 +6,8 @@ from aiogram import Bot, Dispatcher, types, F
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
@@ -14,7 +16,7 @@ from services import link_account
 
 # All handlers should be attached to the Router (or Dispatcher)
 
-dp = Dispatcher()
+dp = Dispatcher(storage=MemoryStorage())
 
 
 @dp.message(CommandStart())
@@ -22,6 +24,8 @@ async def command_start_handler(message: Message):
     """
     This handler receives messages with `/start` command
     """
+    if len(message.text.split()) == 1:
+        await message.answer('Log in to your account on the website')
     access_token = message.text.split(' ')[1]
     builder = InlineKeyboardBuilder()
     builder.add(types.InlineKeyboardButton(
@@ -34,6 +38,7 @@ async def command_start_handler(message: Message):
         reply_markup=builder.as_markup()
     )
 
+
 @dp.callback_query(F.data.startswith("link_token:"))
 async def link_account_handler(callback: types.CallbackQuery):
     access_token = callback.data.split(':')[1]
@@ -41,11 +46,26 @@ async def link_account_handler(callback: types.CallbackQuery):
     data = {**user_data, "link_token": access_token}
     response = link_account(data=data, bot_token=BOT_TOKEN)
     if response == 'success':
-        await callback.message.edit_reply_markup(reply_markup=None)
+        builder = InlineKeyboardBuilder()
+        builder.add(types.InlineKeyboardButton(
+            text="Получить уведомления",
+            callback_data="test",
+        )
+        )
+        await callback.message.edit_reply_markup(reply_markup=builder.as_markup())
         response_text = 'Успешно привязан!'
     else:
         response_text = response
     await callback.message.answer(response_text)
+
+
+@dp.callback_query(F.data == 'test')
+async def test(callback: types.CallbackQuery, state: FSMContext) -> Message:
+    print(await state.get_data())
+    await state.update_data(access_token=callback.from_user.username)
+    print(await state.get_data())
+
+    return callback.message.answer('hello_test')
 
 
 @dp.message()
