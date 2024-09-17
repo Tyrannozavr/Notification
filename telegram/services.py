@@ -2,6 +2,7 @@ import hashlib
 import hmac
 
 import requests
+from aiogram.fsm.context import FSMContext
 
 from data import BASE_URL
 
@@ -14,6 +15,19 @@ def link_account(data: dict, bot_token: str) -> str:
         return 'success'
     else:
         return response.text
+
+
+async def get_access_token(data: dict, bot_token: str) -> str:
+    url = BASE_URL + 'auth/telegram/login'
+    data = encode_data(data, bot_token=bot_token)
+    response = requests.post(url, json={'data': data})
+    if response.status_code == 200:
+        return response.json().get('access')
+
+
+async def login_account(data: dict, bot_token: str, state: FSMContext) -> str:
+    access_token = get_access_token(data, bot_token)
+    await state.update_data(access_token=access_token)
 
 
 def encode_data(data: dict, bot_token: str):

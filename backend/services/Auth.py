@@ -17,6 +17,7 @@ from backend.core import settings
 from backend.core.database import get_db
 from backend.core.models import User, LinkToken
 from backend.core.schemas import TokenData
+from backend.core.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -53,8 +54,12 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
-
-
+def get_access_token_by_username(username: str):
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": username}, expires_delta=access_token_expires
+    )
+    return access_token
 
 def generate_short_token(length=16):
     return secrets.token_urlsafe(length)[:length]  # Generate a secure token

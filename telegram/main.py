@@ -8,11 +8,12 @@ from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.methods import SendMessage
 from aiogram.types import Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from data import BOT_TOKEN
-from services import link_account
+from services import link_account, login_account
 
 # All handlers should be attached to the Router (or Dispatcher)
 
@@ -40,7 +41,7 @@ async def command_start_handler(message: Message):
 
 
 @dp.callback_query(F.data.startswith("link_token:"))
-async def link_account_handler(callback: types.CallbackQuery):
+async def link_account_handler(callback: types.CallbackQuery, state: FSMContext):
     access_token = callback.data.split(':')[1]
     user_data = callback.from_user.__dict__
     data = {**user_data, "link_token": access_token}
@@ -49,23 +50,23 @@ async def link_account_handler(callback: types.CallbackQuery):
         builder = InlineKeyboardBuilder()
         builder.add(types.InlineKeyboardButton(
             text="Получить уведомления",
-            callback_data="test",
+            callback_data="notification_list",
         )
         )
-        await callback.message.edit_reply_markup(reply_markup=builder.as_markup())
+        await callback.message.edit_reply_markup(reply_markup=None)
+        await login_account(data=callback.from_user.__dict__, bot_token=BOT_TOKEN, state=state)
         response_text = 'Успешно привязан!'
+        await callback.message.answer(response_text, reply_markup=builder.as_markup())
+
     else:
         response_text = response
-    await callback.message.answer(response_text)
+        await callback.message.answer(response_text)
 
 
-@dp.callback_query(F.data == 'test')
-async def test(callback: types.CallbackQuery, state: FSMContext) -> Message:
-    print(await state.get_data())
-    await state.update_data(access_token=callback.from_user.username)
-    print(await state.get_data())
-
-    return callback.message.answer('hello_test')
+@dp.callback_query(F.data == 'notification_list')
+async def test(callback: types.CallbackQuery) -> SendMessage:
+    print('list')
+    return callback.message.answer('list')
 
 
 @dp.message()
