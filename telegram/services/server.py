@@ -4,6 +4,7 @@ from typing import List
 
 import requests
 from aiogram.fsm.context import FSMContext
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from data import BASE_URL, BOT_TOKEN
 from typing_extensions import Any
@@ -44,6 +45,7 @@ def encode_data(data: dict, bot_token: str):
     hash_signature = hmac.new(secret_key, msg=data_check_string.encode(), digestmod=hashlib.sha256).hexdigest()
     data['hash'] = hash_signature
     return data
+
 
 
 async def get_auth_request(url: str, state: FSMContext, user_data: dict) -> Any:
