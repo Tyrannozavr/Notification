@@ -22,10 +22,11 @@ def create_notification(db: Session, notification: NotificationCreate, owner_id:
     # Add tags if provided
     if notification.tags:
         for tag_name in notification.tags:
+            if not tag_name.startswith("#"):
+                tag_name = f"#{tag_name}"
             tag = get_or_create_tag(db, tag_name)
             if tag not in db_notification.tags:
                 db_notification.tags.append(tag)
-
     db.add(db_notification)
     db.commit()
     db.refresh(db_notification)

@@ -1,4 +1,4 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkbWl2IiwiZXhwIjoxNzI2NjA4ODI0fQ.M9NMRm0-OwDJvjzxZKzwGlOV93kOmMMOp4bJvXKpSTM
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkbWl2IiwiZXhwIjoxNzI2NjExMjE1fQ.w21Ek9yYInH9yVZXMq0NuyatxxKDAPD5mB-wBtxPdx8
 GET http://127.0.0.1:8000/api/notifications/
 Authorization: Bearer {{token}}
 ###
@@ -15,7 +15,7 @@ Content-Type: application/json
   "description": "We are excited to announce the release of our new feature!",
   "tags": [
     "sdf",
-    "sdf",
+    "sdf2",
     "release"
   ]
 }

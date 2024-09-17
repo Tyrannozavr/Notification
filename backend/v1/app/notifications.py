@@ -3,7 +3,7 @@ from typing import List
 from fastapi import Depends, HTTPException, status
 from fastapi.routing import APIRouter
 from sqlalchemy.orm import Session
-
+from fastapi.responses import JSONResponse
 from backend.core.database import get_db  # Assume you have a function to get the DB session
 from backend.core.models import User, Notification, Tag
 from backend.core.schemas import NotificationCreate, NotificationResponse  # Import your schemas
@@ -31,7 +31,7 @@ async def filter_notifications_by_tag(tag_name: str, current_user: User = Depend
     return notifications
 
 
-@router.post("/", response_model=NotificationResponse)
+@router.post("/", response_model=NotificationResponse, status_code=status.HTTP_201_CREATED)
 async def create_notification_endpoint(
         notification: NotificationCreate,
         current_user: User = Depends(get_current_user),
@@ -49,7 +49,6 @@ async def update_notification(notification_id: int, notification: NotificationCr
     if not existing_notification:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Notification not found or you don't have permission to perform this operation")
-    print(existing_notification)
 
     for key, value in notification.dict().items():
         if value:

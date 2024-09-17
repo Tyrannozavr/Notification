@@ -71,10 +71,12 @@ async def link_account_handler(callback: types.CallbackQuery, state: FSMContext)
 @dp.message(F.text == 'Показать все уведомления')
 async def notification_list(message: Message, state: FSMContext):
     notifications = await get_all_notifications(state=state, user_data=message.from_user.__dict__)
+    if isinstance(notifications, str):
+        return await message.answer(notifications)
     if notifications:
-        await message.answer("\n".join(notifications))
+        return await message.answer("\n".join(notifications))
     else:
-        await message.answer("Нет уведомлений.")
+        return await message.answer("Нет уведомлений.")
 
 
 @dp.message(F.text == 'Создать уведомление')
@@ -93,16 +95,7 @@ async def process_description(message: Message, state: FSMContext):
     await state.update_data(description=message.text)
     await message.answer("Введите теги уведомления разделенные через пробел (необязательно)")
     await state.set_state(Notification.tags)
-# {
-#   "title": "New Feature Release 2.0",
-#   "description": "We are excited to announce the release of our new feature!",
-#   "tags": [
-#     "update",
-#     "hello_world",
-#     "most_important",
-#     "study"
-#   ]
-# }
+
 @dp.message(Notification.tags)
 async def process_tags(message: Message, state: FSMContext):
     await state.update_data(tags=message.text.split())
@@ -116,11 +109,10 @@ async def process_tags(message: Message, state: FSMContext):
     if isinstance(response, str):
         await message.answer(response)
     else:
-        if response.status_code == 200:  #change to 201 and fix tags
+        if response.status_code == 201:
             await message.answer('Создано успешно')
         else:
             await message.answer(response.text)
-    # await message.answer(f"Регистрация завершена:\nИмя: {user_data['name']}\nВозраст: {user_data['age']}\nТелефон: {message.text}")
 
 
 async def main() -> None:

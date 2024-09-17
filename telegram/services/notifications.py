@@ -16,12 +16,14 @@ def create_notification_keyboard():
                                    keyboard=[[button_show, button_create, button_edit, button_delete]])
     return greet_kb
 
-async def get_all_notifications(state: FSMContext, user_data: dict) -> list:
+async def get_all_notifications(state: FSMContext, user_data: dict) -> list | str:
     notifications = await get_auth_request('notifications', state=state, user_data=user_data)
+    if isinstance(notifications, str):
+        return notifications
     return [
         (f"{notification.get('id')}: {notification.get('title')} \n "
          f"{notification.get('description')} \n"
-         f" {' #'.join([tag.get('name') for tag in notification.get('tags')])}")
+         f" {' '.join([tag.get('name') for tag in notification.get('tags')])}")
         for notification in notifications
     ]
 
