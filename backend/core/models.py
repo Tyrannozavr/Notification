@@ -22,6 +22,7 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
+    telegram_id = Column(String, nullable=True)
 
     notifications = relationship("Notification", back_populates="owner")
     link_token = relationship("LinkToken", back_populates="user", uselist=False)  # One-to-one relationship

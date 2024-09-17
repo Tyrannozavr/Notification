@@ -72,7 +72,7 @@ def create_link_token(user_id: int, db: Session):
     return short_token
 
 
-def get_user_by_link_token(token: str, db: Session):
+async def get_user_by_link_token(token: str, db: Session):
     # Retrieve the LinkAccount from the database
     link_account = db.query(LinkToken).filter_by(token=token).first()
 

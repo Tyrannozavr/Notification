@@ -76,8 +76,11 @@ async def telegram_link(payload: Payload, db: Session = Depends(get_db)):
         if not link_token:
             raise HTTPException(status_code=401, detail="to connect bot get link on the website")
         user_telegram_id = user_data.get('id')
-        user = get_user_by_link_token(token=link_token, db=db)
-        print(user, user_telegram_id)
+        user = await get_user_by_link_token(token=link_token, db=db)
+        if not user:
+            raise HTTPException(status_code=401, detail="account not found")
+        user.telegram_id = user_telegram_id
+        db.commit()
         return "OK"
     else:
         return HTTPException(status_code=401, detail="Telegram authorization failed")
