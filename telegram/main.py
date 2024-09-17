@@ -37,11 +37,9 @@ async def command_start_handler(message: Message):
 @dp.callback_query(F.data.startswith("link_token:"))
 async def link_account_handler(callback: types.CallbackQuery):
     access_token = callback.data.split(':')[1]
-    # print('access_token:', access_token)
     user_data = callback.from_user.__dict__
     data = {**user_data, "link_token": access_token}
     response = link_account(data=data, bot_token=BOT_TOKEN)
-    # print('user_data:', user_data)
     if response == 'success':
         await callback.message.edit_reply_markup(reply_markup=None)
         response_text = 'Успешно привязан!'

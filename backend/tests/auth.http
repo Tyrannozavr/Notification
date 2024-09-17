@@ -13,11 +13,10 @@ POST http://127.0.0.1:8000/api/auth/register/
 Content-Type: application/json
 
 {
-  "username": "dmiv2",
+  "username": "dmiv",
   "password": "123456"
 }
 ###
-
 POST http://127.0.0.1:8000/api/auth/token
 Accept: application/json
 
@@ -25,6 +24,11 @@ Accept: application/json
     "username": "dmiv",
     "password": "123456"
 }
+###
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkbWl2IiwiZXhwIjoxNzI2NTYyNjIxfQ.xRghewxucGhMtlYgUc_PvmSIYiODKIB5Z90h1dx6mw4
+GET http://127.0.0.1:8000/api/auth/telegram/link/
+Accept: application/json
+Authorization: Bearer {{token}}
 ###
 POST http://127.0.0.1:8000/api/auth/telegram/link/
 Content-Type: application/json

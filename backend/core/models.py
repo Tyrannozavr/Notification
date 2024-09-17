@@ -24,6 +24,7 @@ class User(Base):
     is_active = Column(Boolean, default=True)
 
     notifications = relationship("Notification", back_populates="owner")
+    link_token = relationship("LinkToken", back_populates="user", uselist=False)  # One-to-one relationship
 
 
 class Tag(Base):
@@ -49,3 +50,19 @@ class Notification(Base):
     # New fields for timestamps
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+class LinkToken(Base):
+    __tablename__ = "link_tokens"
+
+    id = Column(Integer, primary_key=True)
+    token = Column(String, unique=True, index=True)  # This will store the generated token
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True)  # Ensure one-to-one relationship
+
+    user = relationship("User", back_populates="link_token")
+
+    # New fields for timestamps
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+
+

@@ -1,5 +1,6 @@
 import hashlib
 import hmac
+import secrets
 from datetime import datetime, timezone, timedelta
 from typing import Annotated
 
@@ -14,7 +15,7 @@ from starlette import status
 
 from backend.core import settings
 from backend.core.database import get_db
-from backend.core.models import User
+from backend.core.models import User, LinkToken
 from backend.core.schemas import TokenData
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -53,6 +54,34 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
+
+
+def generate_short_token(length=16):
+    return secrets.token_urlsafe(length)[:length]  # Generate a secure token
+
+
+def create_link_token(user_id: int, db: Session):
+    # Generate a short token
+    short_token = generate_short_token()
+
+    # Create a LinkAccount entry in the database
+    link_account = LinkToken(user_id=user_id, token=short_token)
+    db.add(link_account)
+    db.commit()
+
+    return short_token
+
+
+def decode_link_token(token: str, db: Session):
+    # Retrieve the LinkAccount from the database
+    link_account = db.query(LinkToken).filter_by(token=token).first()
+
+    if not link_account:
+        return None  # Token not found in the database
+
+    return link_account.user_id  # Return the user ID associated with the token
+
+
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -71,6 +100,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Se
     if user is None:
         raise credentials_exception
     return user
+
 
 def check_telegram_authorization(auth_data: dict, bot_token: str):
     check_hash = auth_data['hash']
