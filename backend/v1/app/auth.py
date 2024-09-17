@@ -12,7 +12,7 @@ from backend.core.models import User
 from backend.core.schemas import Token, UserLogin, Payload
 from backend.core.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 from backend.services.Auth import create_access_token, verify_password, get_password_hash, get_user_by_username, \
-    check_telegram_authorization, get_current_user, create_link_token
+    check_telegram_authorization, get_current_user, create_link_token, get_user_by_link_token
 
 router = APIRouter()
 
@@ -73,11 +73,11 @@ async def telegram_link(payload: Payload, db: Session = Depends(get_db)):
     if is_from_telegram:
         user_data = payload.data
         link_token = user_data.get('link_token')
-        print('link_token', link_token)
         if not link_token:
             raise HTTPException(status_code=401, detail="to connect bot get link on the website")
         user_telegram_id = user_data.get('id')
-        user = await get_current_user(token=link_token, db=db)
+        user = get_user_by_link_token(token=link_token, db=db)
+        print(user, user_telegram_id)
         return "OK"
     else:
         return HTTPException(status_code=401, detail="Telegram authorization failed")

@@ -72,14 +72,14 @@ def create_link_token(user_id: int, db: Session):
     return short_token
 
 
-def decode_link_token(token: str, db: Session):
+def get_user_by_link_token(token: str, db: Session):
     # Retrieve the LinkAccount from the database
     link_account = db.query(LinkToken).filter_by(token=token).first()
 
     if not link_account:
         return None  # Token not found in the database
-
-    return link_account.user_id  # Return the user ID associated with the token
+    user = db.query(User).filter_by(id=link_account.user_id).first()
+    return user  # Return the user ID associated with the token
 
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
