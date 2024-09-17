@@ -11,12 +11,10 @@ def create_notification_keyboard():
     button_show = KeyboardButton(text="Показать все уведомления")
     button_edit = KeyboardButton(text="Редактировать уведомление")
     button_delete = KeyboardButton(text="Удалить уведомление")
-    button_delete = KeyboardButton(text="register")
 
     greet_kb = ReplyKeyboardMarkup(resize_keyboard=True,
                                    keyboard=[[button_show, button_create, button_edit, button_delete]])
     return greet_kb
-
 
 async def get_all_notifications(state: FSMContext, user_data: dict) -> list:
     notifications = await get_auth_request('notifications', state=state, user_data=user_data)

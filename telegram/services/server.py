@@ -1,13 +1,11 @@
 import hashlib
 import hmac
-from typing import List
 
 import requests
 from aiogram.fsm.context import FSMContext
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-
-from data import BASE_URL, BOT_TOKEN
 from typing_extensions import Any
+
+from telegram.data import BASE_URL, BOT_TOKEN
 
 
 def link_account(data: dict, bot_token: str) -> str:
@@ -21,7 +19,7 @@ def link_account(data: dict, bot_token: str) -> str:
 
 
 async def get_access_token(data: dict, bot_token: str) -> str:
-    url = BASE_URL + 'auth/telegram/login'
+    url = BASE_URL + 'auth/telegram/login/'
     data = encode_data(data, bot_token=bot_token)
     response = requests.post(url, json={'data': data})
     if response.status_code == 200:
@@ -57,6 +55,20 @@ async def get_auth_request(url: str, state: FSMContext, user_data: dict) -> Any:
         login_status = await login_account(data=user_data, state=state)
         if login_status == 'success':
             return await get_auth_request(url=url, state=state, user_data=user_data)
+        else:
+            return 'Authentication error, link your account'
+    else:
+        return response.json()
+
+async def post_auth_request(url: str, data: dict, state: FSMContext, user_data: dict) -> Any:
+    state_data = await state.get_data()
+    token = state_data.get('access_token')
+    request_url = BASE_URL + url
+    response = requests.post(request_url, json=data, headers={'Authorization': f'Bearer {token}'})
+    if response.status_code == 401:
+        login_status = await login_account(data=user_data, state=state)
+        if login_status == 'success':
+            return await post_auth_request(url=url, data=data, state=state, user_data=user_data)
         else:
             return 'Authentication error, link your account'
     else:

@@ -23,7 +23,8 @@ def create_notification(db: Session, notification: NotificationCreate, owner_id:
     if notification.tags:
         for tag_name in notification.tags:
             tag = get_or_create_tag(db, tag_name)
-            db_notification.tags.append(tag)
+            if tag not in db_notification.tags:
+                db_notification.tags.append(tag)
 
     db.add(db_notification)
     db.commit()

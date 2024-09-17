@@ -1,19 +1,18 @@
 import asyncio
+import json
 import logging
 import sys
 
-from aiogram import Bot, Dispatcher, types, F, Router
-from aiogram.enums import ParseMode
-from aiogram.filters import CommandStart, Command
+from aiogram import Bot, Dispatcher, types, F
+from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import Message
-from aiogram.utils.chat_action import ChatActionSender
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from data import BOT_TOKEN
-from services.server import link_account, login_account
+from services.server import link_account, login_account, post_auth_request
 from telegram.services.notifications import create_notification_keyboard, get_all_notifications
 
 # All handlers should be attached to the Router (or Dispatcher)
@@ -21,10 +20,10 @@ from telegram.services.notifications import create_notification_keyboard, get_al
 dp = Dispatcher(storage=MemoryStorage())
 
 
-class Registration(StatesGroup):
-    name = State()
-    age = State()
-    phone = State()
+class Notification(StatesGroup):
+    title = State()
+    description = State()
+    tags = State()
 
 
 @dp.message(CommandStart())
@@ -78,27 +77,46 @@ async def notification_list(message: Message, state: FSMContext):
         await message.answer("Нет уведомлений.")
 
 
-@dp.message(F.text == 'register')
+@dp.message(F.text == 'Создать уведомление')
 async def register_cmd_handler(message: Message, state: FSMContext):
-    await message.answer("Введите ваше имя:")
-    await state.set_state(Registration.name)
+    await message.answer("Введите заголовок уведомления:")
+    await state.set_state(Notification.title)
 
-@dp.message(Registration.name)
-async def process_name(message: Message, state: FSMContext):
-    await state.update_data(name=message.text)
-    await message.answer("Введите ваш возраст:")
-    await state.set_state(Registration.age)
+@dp.message(Notification.title)
+async def process_title(message: Message, state: FSMContext):
+    await state.update_data(title=message.text)
+    await message.answer("Введите описание уведомления:")
+    await state.set_state(Notification.description)
 
-@dp.message(Registration.age)
-async def process_age(message: Message, state: FSMContext):
-    await state.update_data(age=message.text)
-    await message.answer("Отправьте ваш номер телефона:")
-    await state.set_state(Registration.phone)
-
-@dp.message(Registration.phone)
-async def process_phone(message: Message, state: FSMContext):
+@dp.message(Notification.description)
+async def process_description(message: Message, state: FSMContext):
+    await state.update_data(description=message.text)
+    await message.answer("Введите теги уведомления разделенные через пробел (необязательно)")
+    await state.set_state(Notification.tags)
+# {
+#   "title": "New Feature Release 2.0",
+#   "description": "We are excited to announce the release of our new feature!",
+#   "tags": [
+#     "update",
+#     "hello_world",
+#     "most_important",
+#     "study"
+#   ]
+# }
+@dp.message(Notification.tags)
+async def process_tags(message: Message, state: FSMContext):
+    await state.update_data(tags=message.text.split())
     user_data = await state.get_data()
-    await message.answer(f"Регистрация завершена:\nИмя: {user_data['name']}\nВозраст: {user_data['age']}\nТелефон: {message.text}")
+    data = {
+        "title": user_data["title"],
+        "description": user_data["description"],
+        "tags": user_data["tags"],
+    }
+    print('data is', data)
+    response = await post_auth_request(url='notifications/', data=data, state=state, user_data=message.from_user.__dict__)
+    print('response is', response)
+    await message.answer(str(response))
+    # await message.answer(f"Регистрация завершена:\nИмя: {user_data['name']}\nВозраст: {user_data['age']}\nТелефон: {message.text}")
 
 
 async def main() -> None:
