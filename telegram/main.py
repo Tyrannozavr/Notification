@@ -13,7 +13,7 @@ from aiogram.types import Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from data import BOT_TOKEN
-from services import link_account, login_account
+from services import link_account, login_account, get_auth_request
 
 # All handlers should be attached to the Router (or Dispatcher)
 
@@ -54,7 +54,7 @@ async def link_account_handler(callback: types.CallbackQuery, state: FSMContext)
         )
         )
         await callback.message.edit_reply_markup(reply_markup=None)
-        await login_account(data=callback.from_user.__dict__, bot_token=BOT_TOKEN, state=state)
+        await login_account(data=callback.from_user.__dict__, state=state)
         response_text = 'Успешно привязан!'
         await callback.message.answer(response_text, reply_markup=builder.as_markup())
 
@@ -64,30 +64,30 @@ async def link_account_handler(callback: types.CallbackQuery, state: FSMContext)
 
 
 @dp.callback_query(F.data == 'notification_list')
-async def test(callback: types.CallbackQuery) -> SendMessage:
-    print('list')
-    return callback.message.answer('list')
+async def test(callback: types.CallbackQuery, state: FSMContext) -> SendMessage:
+    notifications = await get_auth_request(url='notifications/', state=state,
+                                           user_data=callback.from_user.__dict__)
+    return callback.message.answer(str(notifications))
 
 
-@dp.message()
-async def echo_handler(message: Message) -> None:
-    """
-    Handler will forward receive a message back to the sender
-
-    By default, message handler will handle all message types (like a text, photo, sticker etc.)
-    """
-    try:
-        # Send a copy of the received message
-        await message.send_copy(chat_id=message.chat.id)
-    except TypeError:
-        # But not all the types is supported to be copied so need to handle it
-        await message.answer("Nice try!")
+# @dp.message()
+# async def echo_handler(message: Message) -> None:
+#     """
+#     Handler will forward receive a message back to the sender
+#
+#     By default, message handler will handle all message types (like a text, photo, sticker etc.)
+#     """
+#     try:
+#         # Send a copy of the received message
+#         await message.send_copy(chat_id=message.chat.id)
+#     except TypeError:
+#         # But not all the types is supported to be copied so need to handle it
+#         await message.answer("Nice try!")
 
 
 async def main() -> None:
     # Initialize Bot instance with default bot properties which will be passed to all API calls
     bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-
     # And the run events dispatching
     await dp.start_polling(bot)
 

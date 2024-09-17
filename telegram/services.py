@@ -4,7 +4,7 @@ import hmac
 import requests
 from aiogram.fsm.context import FSMContext
 
-from data import BASE_URL
+from data import BASE_URL, BOT_TOKEN
 
 
 def link_account(data: dict, bot_token: str) -> str:
@@ -25,10 +25,14 @@ async def get_access_token(data: dict, bot_token: str) -> str:
         return response.json().get('access')
 
 
-async def login_account(data: dict, bot_token: str, state: FSMContext) -> str:
-    access_token = get_access_token(data, bot_token)
-    await state.update_data(access_token=access_token)
-
+async def login_account(data: dict, state: FSMContext) -> str:
+    bot_token = BOT_TOKEN
+    access_token = await get_access_token(data, bot_token)
+    if not access_token:
+        return 'error'
+    else:
+        await state.update_data(access_token=access_token)
+        return 'success'
 
 def encode_data(data: dict, bot_token: str):
     data_check_arr = [f"{key}={value}" for key, value in data.items()]
@@ -40,24 +44,17 @@ def encode_data(data: dict, bot_token: str):
     return data
 
 
-async def store_user_access_token(user_id: int, token: str):
-    try:
-        # Check if the user already exists in the database
-        user_token = session.query(UserToken).filter_by(user_id=user_id).first()
-
-        if user_token:
-            # Update existing token
-            user_token.access_token = token
+async def get_auth_request(url: str, state: FSMContext, user_data: dict) -> str:
+    data = await state.get_data()
+    token = data.get('access_token')
+    request_url = BASE_URL + url
+    response = requests.get(request_url, headers={'Authorization': f'Bearer {token}'})
+    if response.status_code == 401:
+        login_status = await login_account(data=user_data, state=state)
+        if login_status == 'success':
+            return await get_auth_request(url=url, state=state, user_data=user_data)
         else:
-            # Create a new entry for the user
-            user_token = UserToken(user_id=user_id, access_token=token)
-            session.add(user_token)
+            return 'Authentication error, link your account'
+    else:
+        return response.json()
 
-        # Commit the changes to the database
-        session.commit()
-    except IntegrityError:
-        # Handle unique constraint violation (if necessary)
-        session.rollback()
-        print(f"User ID {user_id} already exists.")
-    finally:
-        session.close()
