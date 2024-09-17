@@ -3,6 +3,7 @@ import hmac
 
 import requests
 from aiogram.fsm.context import FSMContext
+from requests import Response
 from typing_extensions import Any
 
 from telegram.data import BASE_URL, BOT_TOKEN
@@ -60,7 +61,7 @@ async def get_auth_request(url: str, state: FSMContext, user_data: dict) -> Any:
     else:
         return response.json()
 
-async def post_auth_request(url: str, data: dict, state: FSMContext, user_data: dict) -> Any:
+async def post_auth_request(url: str, data: dict, state: FSMContext, user_data: dict) -> Response | str:
     state_data = await state.get_data()
     token = state_data.get('access_token')
     request_url = BASE_URL + url
@@ -72,5 +73,5 @@ async def post_auth_request(url: str, data: dict, state: FSMContext, user_data: 
         else:
             return 'Authentication error, link your account'
     else:
-        return response.json()
+        return response
 

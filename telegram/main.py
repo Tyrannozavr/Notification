@@ -112,10 +112,14 @@ async def process_tags(message: Message, state: FSMContext):
         "description": user_data["description"],
         "tags": user_data["tags"],
     }
-    print('data is', data)
     response = await post_auth_request(url='notifications/', data=data, state=state, user_data=message.from_user.__dict__)
-    print('response is', response)
-    await message.answer(str(response))
+    if isinstance(response, str):
+        await message.answer(response)
+    else:
+        if response.status_code == 200:  #change to 201 and fix tags
+            await message.answer('Создано успешно')
+        else:
+            await message.answer(response.text)
     # await message.answer(f"Регистрация завершена:\nИмя: {user_data['name']}\nВозраст: {user_data['age']}\nТелефон: {message.text}")
 
 
