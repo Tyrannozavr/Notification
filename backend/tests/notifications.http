@@ -1,4 +1,4 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkbWl2IiwiZXhwIjoxNzI2NTIxMjk2fQ.PgPBHuMkMgMcJGFzHsFE1rhehuRE2ZvsCpky7NlOl14
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkbWl2IiwiZXhwIjoxNzI2NTg2NDQ3fQ.-IE6efUBT6R7XPtkxwHP5HWDUyG9D2e18DJmjOlbgas
 GET http://127.0.0.1:8000/api/notifications/
 Authorization: Bearer {{token}}
 ###

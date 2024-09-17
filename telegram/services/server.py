@@ -1,10 +1,12 @@
 import hashlib
 import hmac
+from typing import List
 
 import requests
 from aiogram.fsm.context import FSMContext
 
 from data import BASE_URL, BOT_TOKEN
+from typing_extensions import Any
 
 
 def link_account(data: dict, bot_token: str) -> str:
@@ -44,7 +46,7 @@ def encode_data(data: dict, bot_token: str):
     return data
 
 
-async def get_auth_request(url: str, state: FSMContext, user_data: dict) -> str:
+async def get_auth_request(url: str, state: FSMContext, user_data: dict) -> Any:
     data = await state.get_data()
     token = data.get('access_token')
     request_url = BASE_URL + url

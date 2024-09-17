@@ -13,7 +13,8 @@ from aiogram.types import Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from data import BOT_TOKEN
-from services import link_account, login_account, get_auth_request
+from services.server import link_account, login_account, get_auth_request
+from telegram.services.notifications import create_notification_keyboard, get_all_notifications
 
 # All handlers should be attached to the Router (or Dispatcher)
 
@@ -40,6 +41,9 @@ async def command_start_handler(message: Message):
     )
 
 
+# @dp.message_handler(lambda message: message.text == "Создать уведомление с тегом")
+# async def create_notification(message: types.Message):
+#     await message.answer("Введите текст уведомления и тег (например: 'Уведомление #тег'):")
 @dp.callback_query(F.data.startswith("link_token:"))
 async def link_account_handler(callback: types.CallbackQuery, state: FSMContext):
     access_token = callback.data.split(':')[1]
@@ -54,35 +58,48 @@ async def link_account_handler(callback: types.CallbackQuery, state: FSMContext)
         )
         )
         await callback.message.edit_reply_markup(reply_markup=None)
-        await login_account(data=callback.from_user.__dict__, state=state)
-        response_text = 'Успешно привязан!'
-        await callback.message.answer(response_text, reply_markup=builder.as_markup())
+        await login_account(data=callback.from_user.__dict__,
+                            state=state)  # Assuming this function is defined elsewhere
+
+        response_text = 'Успешно привязан! Выберите действие:'
+        await callback.message.answer(response_text, reply_markup=create_notification_keyboard())
 
     else:
         response_text = response
         await callback.message.answer(response_text)
 
-
-@dp.callback_query(F.data == 'notification_list')
+@dp.callback_query(F.data == 'create')
 async def test(callback: types.CallbackQuery, state: FSMContext) -> SendMessage:
     notifications = await get_auth_request(url='notifications/', state=state,
                                            user_data=callback.from_user.__dict__)
+    print('only create ')
+    builder = InlineKeyboardBuilder()
+    for notification in notifications:
+        builder.add(types.InlineKeyboardButton(text=notification.title,
+                                               callback_data="notification_view"))
     return callback.message.answer(str(notifications))
 
 
-# @dp.message()
-# async def echo_handler(message: Message) -> None:
-#     """
-#     Handler will forward receive a message back to the sender
+# @dp.callback_query(F.data == "notification_list")
+# async def handle_notification_list(callback: types.CallbackQuery, state: FSMContext):
+#     await callback.message.edit_reply_markup(reply_markup=None)
+#     await login_account(data=callback.from_user.__dict__, state=state)  # Assuming this function is defined elsewhere
 #
-#     By default, message handler will handle all message types (like a text, photo, sticker etc.)
-#     """
-#     try:
-#         # Send a copy of the received message
-#         await message.send_copy(chat_id=message.chat.id)
-#     except TypeError:
-#         # But not all the types is supported to be copied so need to handle it
-#         await message.answer("Nice try!")
+#     response_text = 'Успешно привязан! Выберите действие:'
+#     await callback.message.answer(response_text, reply_markup=create_notification_keyboard())
+
+@dp.message(F.text == 'Показать все уведомления')
+async def any_handler(message: Message, state: FSMContext):
+    notifications = await get_all_notifications(state=state, user_data=message.from_user.__dict__)
+    if notifications:
+        await message.answer("\n".join(notifications))
+    else:
+        await message.answer("Нет уведомлений.")
+
+@dp.callback_query(F.data == "Создать уведомление с тегом")
+async def create_notification(message: types.Message):
+    await message.answer("Введите текст уведомления и тег (например: 'Уведомление #тег'):")
+
 
 
 async def main() -> None:
