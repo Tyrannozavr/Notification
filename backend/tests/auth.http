@@ -25,7 +25,7 @@ Accept: application/json
     "password": "123456"
 }
 ###
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkbWl2IiwiZXhwIjoxNzI2NjU1MTEwfQ.dji9HJNNadhUa0YAV6vzkQzR-KepuA2fb_jVGvwAjqA
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkbWl2IiwiZXhwIjoxNzI2NzM4NDQyfQ.6VIKSfqzsMcOUZFIygYlX4sKJb60ox_ZjKkLKZZjc0g
 GET http://127.0.0.1:8000/api/auth/telegram/link/
 Accept: application/json
 Authorization: Bearer {{token}}

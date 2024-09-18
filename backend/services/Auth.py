@@ -65,16 +65,19 @@ def generate_short_token(length=16):
     return secrets.token_urlsafe(length)[:length]  # Generate a secure token
 
 
-def create_link_token(user_id: int, db: Session):
+def get_or_create_link_token(user_id: int, db: Session):
     # Generate a short token
     short_token = generate_short_token()
+    link_token = db.query(LinkToken).filter(LinkToken.user_id == user_id).first()
+    if link_token:
+        return link_token.token
+    else:
+        # Create a LinkAccount entry in the database
+        link_account = LinkToken(user_id=user_id, token=short_token)
+        db.add(link_account)
+        db.commit()
 
-    # Create a LinkAccount entry in the database
-    link_account = LinkToken(user_id=user_id, token=short_token)
-    db.add(link_account)
-    db.commit()
-
-    return short_token
+        return short_token
 
 
 async def get_user_by_link_token(token: str, db: Session):

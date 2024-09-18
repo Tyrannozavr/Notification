@@ -1,20 +1,18 @@
 import asyncio
-import json
 import logging
 import sys
 
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from notifications.handlers import register_notification_handlers
 
 from data import BOT_TOKEN
-from services.server import link_account, login_account, post_auth_request
-from services.notifications import create_notification_keyboard, notifications_list_view
+from notifications.handlers import register_notification_handlers
+from services.notifications import create_notification_keyboard
+from services.server import link_account, login_account
 
 # All handlers should be attached to the Router (or Dispatcher)
 
@@ -40,9 +38,6 @@ async def command_start_handler(message: Message):
     )
 
 
-# @dp.message_handler(lambda message: message.text == "Создать уведомление с тегом")
-# async def create_notification(message: types.Message):
-#     await message.answer("Введите текст уведомления и тег (например: 'Уведомление #тег'):")
 @dp.callback_query(F.data.startswith("link_token:"))
 async def link_account_handler(callback: types.CallbackQuery, state: FSMContext):
     access_token = callback.data.split(':')[1]

@@ -11,7 +11,7 @@ from core.models import User
 from core.schemas import Token, UserLogin, Payload
 from core.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 from services.Auth import create_access_token, verify_password, get_password_hash, get_user_by_username, \
-    check_telegram_authorization, get_current_user, create_link_token, get_user_by_link_token, \
+    check_telegram_authorization, get_current_user, get_or_create_link_token, get_user_by_link_token, \
     get_access_token_by_username
 
 router = APIRouter()
@@ -62,7 +62,7 @@ async def login(form_data: UserLogin, db: Session = Depends(get_db)):
 
 @router.get("/telegram/link")
 def telegram_link(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    link_token = create_link_token(current_user.id, db)
+    link_token = get_or_create_link_token(current_user.id, db)
     return f"<a href='https://t.me/notification_dmiv_bot?start={link_token}'>Telegram</a>"
 
 

@@ -1,9 +1,10 @@
-from aiogram import types
+from typing import List
+
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
-from services.server import login_account, get_auth_request
+from services.server import get_auth_request
 
 
 class Notification(StatesGroup):
@@ -23,9 +24,10 @@ def create_notification_keyboard():
     button_show = KeyboardButton(text="Показать все уведомления")
     button_edit = KeyboardButton(text="Редактировать уведомление")
     button_delete = KeyboardButton(text="Удалить уведомление")
+    button_search = KeyboardButton(text="Поиск по тэгу")
 
     greet_kb = ReplyKeyboardMarkup(resize_keyboard=True,
-                                   keyboard=[[button_show, button_create, button_edit, button_delete]])
+                                   keyboard=[[button_show, button_create, button_edit, button_delete, button_search]])
     return greet_kb
 
 
@@ -33,13 +35,11 @@ async def get_all_notifications(state: FSMContext, user_data: dict) -> list | st
     notifications = await get_auth_request('notifications', state=state, user_data=user_data)
     return notifications
 
-async def notifications_list_view(state: FSMContext, user_data: dict) -> list | str:
-    notifications = await get_all_notifications(state, user_data)
-    if isinstance(notifications, str):
-        return notifications
+async def render_notification_list(notifications: List[dict]) -> list:
     return [
         (f"{notification.get('id')}: {notification.get('title')} \n "
          f"{notification.get('description')} \n"
          f" {' '.join([tag.get('name') for tag in notification.get('tags')])}")
         for notification in notifications
     ]
+

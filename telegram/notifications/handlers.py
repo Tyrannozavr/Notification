@@ -1,12 +1,11 @@
-from aiogram.fsm.context import FSMContext
-
 from aiogram import F
-from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.fsm.context import FSMContext
+from aiogram.types import Message, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from notifications.services import register_notification_callback_query
-from services.notifications import notifications_list_view, Notification, get_all_notifications
-from services.server import post_auth_request, auth_request
+from services.notifications import render_notification_list, Notification, get_all_notifications
+from services.server import auth_request, get_auth_request
 
 
 def register_notification_handlers(dp):
@@ -65,13 +64,27 @@ def register_notification_handlers(dp):
 
     @dp.message(F.text == 'Показать все уведомления')
     async def notification_list(message: Message, state: FSMContext):
-        notifications = await notifications_list_view(state=state, user_data=message.from_user.__dict__)
+        notifications = await get_auth_request('notifications', state=state, user_data=message.from_user.__dict__)
+        if isinstance(notifications, str):
+            return notifications
+        if isinstance(notifications, str):
+            return await message.answer(notifications)
+        if notifications:
+            notification_response = await render_notification_list(notifications)
+            return await message.answer("\n".join(notification_response))
+        else:
+            return await message.answer("Нет уведомлений.")
+
+    @dp.message(F.text == 'Поиск по тэгу')
+    async def notification_list(message: Message, state: FSMContext):
+        notifications = await render_notification_list(state=state, user_data=message.from_user.__dict__)
         if isinstance(notifications, str):
             return await message.answer(notifications)
         if notifications:
             return await message.answer("\n".join(notifications))
         else:
             return await message.answer("Нет уведомлений.")
+
 
     @dp.message(F.text == 'Редактировать уведомление')
     async def editable_notification_list(message: Message, state: FSMContext):
@@ -85,4 +98,4 @@ def register_notification_handlers(dp):
         builder = InlineKeyboardBuilder()
         builder.row(*buttons, width=1)
 
-        return await message.answer('выберите какое уведомление удалить', reply_markup=builder.as_markup())
+        return await message.answer('выберите какое уведомление редактировать', reply_markup=builder.as_markup())

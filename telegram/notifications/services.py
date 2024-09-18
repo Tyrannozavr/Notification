@@ -48,6 +48,7 @@ def register_notification_callback_query(dp):
     async def edit_notification_part_callback(callback: types.CallbackQuery, state: FSMContext):
         notification_data = callback.data.split('_')[1]
         notification_key, notification_id = notification_data.split(':')
+        NotificationEdit.id = notification_id
         await callback.message.answer(f'Введите новый {notification_dictionary.get(notification_key)}')
         NotificationEdit.key = notification_key
         await state.set_state(NotificationEdit.value)
@@ -63,7 +64,7 @@ def register_notification_callback_query(dp):
             key: value
         }
         notification_id = NotificationEdit.id
-        response = await auth_request(url=f'notifications/{NotificationEdit.id}/', data=data, state=state,
+        response = await auth_request(url=f'notifications/{notification_id}/', data=data, state=state,
                                       user_data=message.from_user.__dict__, type='patch')
         if response.status_code == 200:
             notification = response.json()
