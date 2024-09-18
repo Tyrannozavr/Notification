@@ -4,9 +4,9 @@ from aiogram import F
 from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from telegram.notifications.services import register_notification_callback_query
-from telegram.services.notifications import notifications_list_view, Notification, get_all_notifications
-from telegram.services.server import post_auth_request, auth_request
+from notifications.services import register_notification_callback_query
+from services.notifications import notifications_list_view, Notification, get_all_notifications
+from services.server import post_auth_request, auth_request
 
 
 def register_notification_handlers(dp):

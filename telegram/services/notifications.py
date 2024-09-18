@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
 
-from telegram.services.server import login_account, get_auth_request
+from services.server import login_account, get_auth_request
 
 
 class Notification(StatesGroup):

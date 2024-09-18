@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 from requests import Response
 from typing_extensions import Any
 
-from telegram.data import BASE_URL, BOT_TOKEN
+from data import BASE_URL, BOT_TOKEN
 
 
 def link_account(data: dict, bot_token: str) -> str:

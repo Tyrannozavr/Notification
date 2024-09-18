@@ -3,8 +3,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from telegram.services.notifications import NotificationEdit
-from telegram.services.server import auth_request
+from services.notifications import NotificationEdit
+from services.server import auth_request
 
 notification_dictionary = {
     "title": "Заголовок",
@@ -67,10 +67,10 @@ def register_notification_callback_query(dp):
                                       user_data=message.from_user.__dict__, type='patch')
         if response.status_code == 200:
             notification = response.json()
-            response = (f"Успешно отредактировано!"
-                        f"Заголовок: {notification.get('title')}"
-                        f"Описание: {notification.get('description')}"
-                        f"Тэги: {' '.join([tag.name for tag in notification.get('tags', [])])}")
+            response = (f"Успешно отредактировано! \n"
+                        f"Заголовок: {notification.get('title')} \n"
+                        f"Описание: {notification.get('description')} \n"
+                        f"Тэги: {' '.join([tag.get('name') for tag in notification.get('tags', [])])}")
             return message.answer(response)
         else:
             return message.answer(response.text)

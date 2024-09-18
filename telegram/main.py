@@ -14,7 +14,7 @@ from notifications.handlers import register_notification_handlers
 
 from data import BOT_TOKEN
 from services.server import link_account, login_account, post_auth_request
-from telegram.services.notifications import create_notification_keyboard, notifications_list_view
+from services.notifications import create_notification_keyboard, notifications_list_view
 
 # All handlers should be attached to the Router (or Dispatcher)
 
