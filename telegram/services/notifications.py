@@ -17,6 +17,8 @@ class NotificationEdit(StatesGroup):
     key = State()
     value = State()
 
+class TagSearch(StatesGroup):
+    tag_name = State()
 
 # Create a reply keyboard for notifications
 def create_notification_keyboard():

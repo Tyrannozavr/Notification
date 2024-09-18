@@ -75,7 +75,7 @@ async def post_auth_request(url: str, data: dict, state: FSMContext, user_data: 
     else:
         return response
 
-async def auth_request(url: str, data: dict, state: FSMContext, user_data: dict, type: str) -> Response | str:
+async def auth_request(url: str, state: FSMContext, user_data: dict, type: str, data: dict = {}) -> Response | str:
     state_data = await state.get_data()
     token = state_data.get('access_token')
     request_url = BASE_URL + url

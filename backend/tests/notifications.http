@@ -13,6 +13,10 @@ Accept: application/json
 GET http://127.0.0.1:8000/api/notifications/
 Authorization: Bearer {{token}}
 ###
+GET http://127.0.0.1:8000/api/notifications/tags/release
+Authorization: Bearer {{token}}
+###
+
 GET http://127.0.0.1:8000/api/notifications/3/
 Authorization: Bearer {{token}}
 ###
