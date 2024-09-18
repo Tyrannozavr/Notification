@@ -17,7 +17,7 @@ def register_notification_handlers(dp):
         notifications = await get_all_notifications(state=state, user_data=message.from_user.__dict__)
         buttons = []
         for notification in notifications:
-            button = InlineKeyboardButton(text=f"test {notification.get('id')} {notification.get('title')}",
+            button = InlineKeyboardButton(text=f"{notification.get('id')} {notification.get('title')}",
                                           callback_data=f"delete:{notification.get('id')}")
             buttons.append(button)
 
@@ -72,3 +72,17 @@ def register_notification_handlers(dp):
             return await message.answer("\n".join(notifications))
         else:
             return await message.answer("Нет уведомлений.")
+
+    @dp.message(F.text == 'Редактировать уведомление')
+    async def editable_notification_list(message: Message, state: FSMContext):
+        notifications = await get_all_notifications(state=state, user_data=message.from_user.__dict__)
+        buttons = []
+        for notification in notifications:
+            button = InlineKeyboardButton(text=f"{notification.get('id')} {notification.get('title')}",
+                                          callback_data=f"edit:{notification.get('id')}")
+            buttons.append(button)
+
+        builder = InlineKeyboardBuilder()
+        builder.row(*buttons, width=1)
+
+        return await message.answer('выберите какое уведомление удалить', reply_markup=builder.as_markup())
