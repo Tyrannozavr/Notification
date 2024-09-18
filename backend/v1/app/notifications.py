@@ -57,11 +57,10 @@ async def update_notification(notification_id: int, notification: NotificationUp
     if not existing_notification:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Notification not found or you don't have permission to perform this operation")
-    print(notification)
     for key, value in notification.dict().items():
         if value:
             if key == 'tags':
-                value = [get_or_create_tag(db, tag.get('name')) for tag in value]
+                value = [get_or_create_tag(db, tag_name) for tag_name in value]
             setattr(existing_notification, key, value)
 
     db.commit()

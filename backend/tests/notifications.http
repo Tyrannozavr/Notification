@@ -47,25 +47,16 @@ PATCH http://127.0.0.1:8000/api/notifications/4/
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
-  {
-    "title": "New Feature Release 2.0",
-    "description": "We are excited to announce the release of our new feature!",
-    "id": 4,
-    "tags": [
-      {
-        "name": "update"
-      },
-      {
-        "name": "hello_world"
-      },
-      {
-        "name": "most_important"
-      },
-      {
-        "name": "study"
-      }
-    ]
-  }
+{
+  "title": "New Feature Release 2.0",
+  "description": "We are excited to announce the release of our new feature!",
+  "id": 4,
+  "tags": [
+    "sdf",
+    "sdf2",
+    "release"
+  ]
+}
 ###
 
 DELETE http://127.0.0.1:8000/api/notifications/4/

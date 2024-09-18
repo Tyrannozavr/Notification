@@ -61,7 +61,6 @@ def register_notification_callback_query(dp):
         data = {
             key: value
         }
-        print('datais', data)
         response = await auth_request(url=f'notifications/{NotificationEdit.id}/', data=data, state=state,
                                 user_data=message.from_user.__dict__, type='patch')
         return message.answer(response.text)
