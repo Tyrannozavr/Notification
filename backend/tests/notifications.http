@@ -1,4 +1,15 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkbWl2IiwiZXhwIjoxNzI2NjY5MTQ1fQ.zA7fI6cvwAunTc8GPMabQNq-_Jdh1X4Eoy4-aRRzCVs
+###
+POST http://127.0.0.1:8000/api/auth/token
+Accept: application/json
+
+{
+    "username": "dmiv",
+    "password": "123456"
+}
+
+
+###
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkbWl2IiwiZXhwIjoxNzI2NzMwMzg4fQ.R2G-fUNr14m5KbDoaBDWwbaG8CNfJola0seuuvhmvPI
 GET http://127.0.0.1:8000/api/notifications/
 Authorization: Bearer {{token}}
 ###
@@ -24,21 +35,39 @@ Content-Type: application/json
   ]
 }
 ###
-PATCH http://127.0.0.1:8000/api/notifications/3/
+PATCH http://127.0.0.1:8000/api/notifications/4/
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "title": "New Feature Release 2.0",
-  "description": "We are excited to announce the release of our new feature!",
-  "tags": [
-    "update",
-    "hello_world",
-    "most_important",
-    "study"
-  ]
+  "title": "New Feature Release 2.0"
 }
 ###
+PATCH http://127.0.0.1:8000/api/notifications/4/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+  {
+    "title": "New Feature Release 2.0",
+    "description": "We are excited to announce the release of our new feature!",
+    "id": 4,
+    "tags": [
+      {
+        "name": "update"
+      },
+      {
+        "name": "hello_world"
+      },
+      {
+        "name": "most_important"
+      },
+      {
+        "name": "study"
+      }
+    ]
+  }
+###
+
 DELETE http://127.0.0.1:8000/api/notifications/4/
 Authorization: Bearer {{token}}
 Content-Type: application/json

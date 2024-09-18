@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from backend.core.models import Notification, Tag
-from backend.core.schemas import NotificationCreate
+from backend.core.schemas import NotificationCreate, NotificationUpdate
 
 
 def get_or_create_tag(db: Session, tag_name: str) -> Tag:
@@ -10,6 +10,7 @@ def get_or_create_tag(db: Session, tag_name: str) -> Tag:
         tag = Tag(name=tag_name)
         db.add(tag)
     return tag
+
 
 def create_notification(db: Session, notification: NotificationCreate, owner_id: int):
     # Create a new Notification instance
@@ -32,14 +33,3 @@ def create_notification(db: Session, notification: NotificationCreate, owner_id:
     db.refresh(db_notification)
     return db_notification
 
-def update_notification(db: Session, notification: Notification, owner_id: int):
-    db_notification = db.query(Notification).filter(
-        Notification.id == notification.id
-    )
-    if notification.title:
-        db_notification.title = notification.title
-        db_notification.description = notification.description
-        db_notification.owner_id = owner_id
-        db.commit()
-        db.refresh(db_notification)
-        return db_notification

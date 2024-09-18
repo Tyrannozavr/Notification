@@ -31,6 +31,11 @@ class NotificationCreate(BaseModel):
     description: str
     tags: Optional[List[str]] = []  # List of tag names (strings)
 
+class NotificationUpdate(BaseModel):
+    title: str = None
+    description: str = None
+    tags: List[dict] = None  # List of tag names (strings)
+
 
 class NotificationResponse(NotificationBase):
     id: int

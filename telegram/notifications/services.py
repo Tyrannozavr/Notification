@@ -34,8 +34,9 @@ def register_notification_callback_query(dp):
                 elif key == 'id':
                     continue
                 button = types.InlineKeyboardButton(text=f'{notification_dictionary.get(key)} - {value}',
-                                                    callback_data=f'edit_{notification_id}-{key}')
+                                                    callback_data=f'edit_{key}')
                 btns.append(button)
+            NotificationEdit.id = notification_id
             builder = InlineKeyboardBuilder()
             builder.row(*btns, width=1)
             return await callback.message.answer(text="Выберите что отредактировать", reply_markup=builder.as_markup())
@@ -45,8 +46,7 @@ def register_notification_callback_query(dp):
 
     @dp.callback_query(F.data.startswith("edit_"))
     async def edit_notification_part_callback(callback: types.CallbackQuery, state: FSMContext):
-        notification_data = callback.data.split('_')[1]
-        notification_id, notification_key = notification_data.split('-')
+        notification_key = callback.data.split('_')[1]
         await callback.message.answer(f'Введите новый {notification_dictionary.get(notification_key)}')
         NotificationEdit.key = notification_key
         await state.set_state(NotificationEdit.value)
@@ -62,6 +62,8 @@ def register_notification_callback_query(dp):
             key: value
         }
         print('datais', data)
-        response = auth_request(url=f'notifications')
+        response = await auth_request(url=f'notifications/{NotificationEdit.id}/', data=data, state=state,
+                                user_data=message.from_user.__dict__, type='patch')
+        return message.answer(response.text)
         # await state.update_data(title=message.text)
         # await message.answer("Введите описание уведомления:")
