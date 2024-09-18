@@ -6,6 +6,8 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from services.notifications import NotificationEdit
 from services.server import auth_request
 
+
+
 notification_dictionary = {
     "title": "Заголовок",
     "description": "Описание",
@@ -24,7 +26,7 @@ def register_notification_callback_query(dp):
     @dp.callback_query(F.data.startswith("edit:"))
     async def edit_notification_callback(callback: types.CallbackQuery, state: FSMContext):
         notification_id = callback.data.split(':')[1]
-        response = await auth_request(url=f'notifications/{notification_id}', data={}, state=state,
+        response = await auth_request(url=f'notifications/get/{notification_id}', data={}, state=state,
                                       user_data=callback.from_user.__dict__, type='get')
         if response.status_code == 200:
             notification = response.json()
@@ -75,5 +77,8 @@ def register_notification_callback_query(dp):
             return message.answer(response)
         else:
             return message.answer(response.text)
-        # await state.update_data(title=message.text)
-        # await message.answer("Введите описание уведомления:")
+
+def render_notification(notification: dict) -> str:
+    return (f"{notification.get('title')} \n "
+            f"{notification.get('description')} \n"
+            f"{[tag.get('name') for tag in notification.get('tags')]}")

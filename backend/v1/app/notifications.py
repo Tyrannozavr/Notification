@@ -31,7 +31,8 @@ async def read_notifications(notification_id: int, current_user: User = Depends(
 @router.get("/tags/{tag_name}/", response_model=List[NotificationResponse])
 async def filter_notifications_by_tag(tag_name: str, current_user: User = Depends(get_current_user),
                                       db: Session = Depends(get_db)):
-    tag_name = f"#t{tag_name}"
+    tag_name = f"#{tag_name}"
+    print(tag_name)
     tag = db.query(Tag).filter(Tag.name == tag_name).first()
     if not tag:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, )

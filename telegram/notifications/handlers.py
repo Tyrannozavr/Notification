@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from notifications.services import register_notification_callback_query
+from notifications.services import register_notification_callback_query, render_notification
 from services.notifications import render_notification_list, Notification, get_all_notifications, TagSearch
 from services.server import auth_request, get_auth_request
 
@@ -51,7 +51,7 @@ def register_notification_handlers(dp):
             "description": user_data["description"],
             "tags": user_data["tags"],
         }
-        response = await auth_request(url='notifications/get/', data=data, state=state,
+        response = await auth_request(url='notifications/', data=data, state=state,
                                       user_data=message.from_user.__dict__, type='post')
         if isinstance(response, str):
             return await message.answer(response)
@@ -85,18 +85,15 @@ def register_notification_handlers(dp):
         tag_name = message.text
         tag_name = tag_name[1:]
         url = f'notifications/tags/{tag_name}/'
-        url = 'notifications/'
-        print(url)
         response = await auth_request(url, state=state,
                                       user_data=message.from_user.__dict__, type='get')
         if response.status_code == 200:
             notifications = response.json()
-            print(notifications, 'lsls')
-
             if isinstance(notifications, str):
                 return await message.answer(notifications)
             if notifications:
-                return await message.answer("\n".join(notifications))
+                return await message.answer('\n\n'.join([render_notification(notification) for notification
+                                                         in notifications]))
             else:
                 return await message.answer("Нет уведомлений.")
         else:

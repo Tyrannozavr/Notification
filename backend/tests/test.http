@@ -1,0 +1,12 @@
+POST http://127.0.0.1:8000/api/auth/register/
+Content-Type: application/json
+
+{
+  "username": "vulliana",
+  "password": "123456"
+}
+###
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2dWxsaWFuYSIsImV4cCI6MTcyNjc0ODM5Nn0.kfMBPgOGvAHKmf9xGzsIAFMhryJRHaqv0Al7rNTHCLM
+GET http://127.0.0.1:8000/api/auth/telegram/link/
+Accept: application/json
+Authorization: Bearer {{token}}
