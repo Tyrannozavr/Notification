@@ -1,7 +1,9 @@
 from aiogram import F, types
 from aiogram.fsm.context import FSMContext
+from aiogram.types import Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+from telegram.services.notifications import NotificationEdit
 from telegram.services.server import auth_request
 
 notification_dictionary = {
@@ -45,7 +47,21 @@ def register_notification_callback_query(dp):
     async def edit_notification_part_callback(callback: types.CallbackQuery, state: FSMContext):
         notification_data = callback.data.split('_')[1]
         notification_id, notification_key = notification_data.split('-')
-        print(notification_id, notification_key)
-        return callback.message.answer(f'Введите новый {notification_dictionary.get(notification_key)}')
-        # response = await auth_request(url=f'notifications/{notification_id}', data={}, state=state,
-        #                               user_data=callback.from_user.__dict__,  type='patch')
+        await callback.message.answer(f'Введите новый {notification_dictionary.get(notification_key)}')
+        NotificationEdit.key = notification_key
+        await state.set_state(NotificationEdit.value)
+
+    @dp.message(NotificationEdit.value)
+    async def process_title(message: Message, state: FSMContext):
+        key = NotificationEdit.key
+        if key == 'tags':
+            value = message.text.split(' ')
+        else:
+            value = message.text
+        data = {
+            key: value
+        }
+        print('datais', data)
+        response = auth_request(url=f'notifications')
+        # await state.update_data(title=message.text)
+        # await message.answer("Введите описание уведомления:")

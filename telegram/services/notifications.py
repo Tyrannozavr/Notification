@@ -11,6 +11,11 @@ class Notification(StatesGroup):
     description = State()
     tags = State()
 
+class NotificationEdit(StatesGroup):
+    id = State()
+    key = State()
+    value = State()
+
 
 # Create a reply keyboard for notifications
 def create_notification_keyboard():
