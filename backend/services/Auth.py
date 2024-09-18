@@ -13,11 +13,11 @@ from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from starlette import status
 
-from backend.core import settings
-from backend.core.database import get_db
-from backend.core.models import User, LinkToken
-from backend.core.schemas import TokenData
-from backend.core.settings import ACCESS_TOKEN_EXPIRE_MINUTES
+from core import settings
+from core.database import get_db
+from core.models import User, LinkToken
+from core.schemas import TokenData
+from core.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")

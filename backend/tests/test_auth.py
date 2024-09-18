@@ -1,10 +1,10 @@
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
-from backend.main import app  # Adjust according to your project structure
-from backend.core.database import get_db
-from backend.core.models import User
-from backend.core.schemas import UserLogin
+from main import app  # Adjust according to your project structure
+from core.database import get_db
+from core.models import User
+from core.schemas import UserLogin
 
 # Create a test client using the FastAPI app
 client = TestClient(app)

@@ -1,17 +1,16 @@
-from fastapi.params import Depends
-from fastapi.routing import APIRouter
 from datetime import timedelta
 
 from fastapi import HTTPException
+from fastapi.params import Depends
 from fastapi.routing import APIRouter
 from sqlalchemy.orm.session import Session
 
-from backend.core import settings
-from backend.core.database import get_db
-from backend.core.models import User
-from backend.core.schemas import Token, UserLogin, Payload
-from backend.core.settings import ACCESS_TOKEN_EXPIRE_MINUTES
-from backend.services.Auth import create_access_token, verify_password, get_password_hash, get_user_by_username, \
+from core import settings
+from core.database import get_db
+from core.models import User
+from core.schemas import Token, UserLogin, Payload
+from core.settings import ACCESS_TOKEN_EXPIRE_MINUTES
+from services.Auth import create_access_token, verify_password, get_password_hash, get_user_by_username, \
     check_telegram_authorization, get_current_user, create_link_token, get_user_by_link_token, \
     get_access_token_by_username
 

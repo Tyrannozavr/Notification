@@ -12,6 +12,7 @@ notification_dictionary = {
     "tags": "Тэги",
 }
 
+
 def register_notification_callback_query(dp):
     @dp.callback_query(F.data.startswith("delete:"))
     async def delete_notification_callback(callback: types.CallbackQuery, state: FSMContext):
@@ -24,7 +25,7 @@ def register_notification_callback_query(dp):
     async def edit_notification_callback(callback: types.CallbackQuery, state: FSMContext):
         notification_id = callback.data.split(':')[1]
         response = await auth_request(url=f'notifications/{notification_id}', data={}, state=state,
-                                          user_data=callback.from_user.__dict__, type='get')
+                                      user_data=callback.from_user.__dict__, type='get')
         if response.status_code == 200:
             notification = response.json()
             btns = []
@@ -34,7 +35,7 @@ def register_notification_callback_query(dp):
                 elif key == 'id':
                     continue
                 button = types.InlineKeyboardButton(text=f'{notification_dictionary.get(key)} - {value}',
-                                                    callback_data=f'edit_{key}')
+                                                    callback_data=f'edit_{key}:{notification_id}')
                 btns.append(button)
             NotificationEdit.id = notification_id
             builder = InlineKeyboardBuilder()
@@ -43,10 +44,10 @@ def register_notification_callback_query(dp):
         else:
             return await callback.message.answer(text=response.text)
 
-
     @dp.callback_query(F.data.startswith("edit_"))
     async def edit_notification_part_callback(callback: types.CallbackQuery, state: FSMContext):
-        notification_key = callback.data.split('_')[1]
+        notification_data = callback.data.split('_')[1]
+        notification_key, notification_id = notification_data.split(':')
         await callback.message.answer(f'Введите новый {notification_dictionary.get(notification_key)}')
         NotificationEdit.key = notification_key
         await state.set_state(NotificationEdit.value)
@@ -61,8 +62,17 @@ def register_notification_callback_query(dp):
         data = {
             key: value
         }
+        notification_id = NotificationEdit.id
         response = await auth_request(url=f'notifications/{NotificationEdit.id}/', data=data, state=state,
-                                user_data=message.from_user.__dict__, type='patch')
-        return message.answer(response.text)
+                                      user_data=message.from_user.__dict__, type='patch')
+        if response.status_code == 200:
+            notification = response.json()
+            response = (f"Успешно отредактировано!"
+                        f"Заголовок: {notification.get('title')}"
+                        f"Описание: {notification.get('description')}"
+                        f"Тэги: {' '.join([tag.name for tag in notification.get('tags', [])])}")
+            return message.answer(response)
+        else:
+            return message.answer(response.text)
         # await state.update_data(title=message.text)
         # await message.answer("Введите описание уведомления:")

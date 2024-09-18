@@ -1,14 +1,15 @@
 from typing import List
 
-from fastapi import Depends, HTTPException, status
+from fastapi import HTTPException, status
+from fastapi.params import Depends
 from fastapi.routing import APIRouter
 from sqlalchemy.orm import Session
 
-from backend.core.database import get_db  # Assume you have a function to get the DB session
-from backend.core.models import User, Notification, Tag
-from backend.core.schemas import NotificationCreate, NotificationResponse, NotificationUpdate  # Import your schemas
-from backend.services.Auth import get_current_user
-from backend.services.notifications import create_notification, get_or_create_tag
+from core.database import get_db  # Assume you have a function to get the DB session
+from core.models import User, Notification, Tag
+from core.schemas import NotificationCreate, NotificationResponse, NotificationUpdate  # Import your schemas
+from services.Auth import get_current_user
+from services.notifications import create_notification, update_notification
 
 router = APIRouter()
 
@@ -49,7 +50,7 @@ async def create_notification_endpoint(
 
 
 @router.patch("/{notification_id}/", response_model=NotificationResponse)
-async def update_notification(notification_id: int, notification: NotificationUpdate,
+async def update_notification_view(notification_id: int, notification: NotificationUpdate,
                               current_user: User = Depends(get_current_user),
                               db: Session = Depends(get_db)):
     existing_notification = db.query(Notification).filter(Notification.id == notification_id,
@@ -57,15 +58,8 @@ async def update_notification(notification_id: int, notification: NotificationUp
     if not existing_notification:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Notification not found or you don't have permission to perform this operation")
-    for key, value in notification.dict().items():
-        if value:
-            if key == 'tags':
-                value = [get_or_create_tag(db, tag_name) for tag_name in value]
-            setattr(existing_notification, key, value)
 
-    db.commit()
-    db.refresh(existing_notification)
-    return existing_notification
+    return update_notification(notification_id=notification_id, db=db, new_notification=notification.dict())
 
 
 @router.delete("/{notification_id}/")
