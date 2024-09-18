@@ -6,7 +6,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from telegram.notifications.services import register_notification_callback_query
 from telegram.services.notifications import notifications_list_view, Notification, get_all_notifications
-from telegram.services.server import post_auth_request
+from telegram.services.server import post_auth_request, auth_request
 
 
 def register_notification_handlers(dp):
@@ -52,15 +52,16 @@ def register_notification_handlers(dp):
             "description": user_data["description"],
             "tags": user_data["tags"],
         }
-        response = await post_auth_request(url='notifications/', data=data, state=state,
-                                           user_data=message.from_user.__dict__)
+        response = await auth_request(url='notifications/', data=data, state=state,
+                                      user_data=message.from_user.__dict__, type='post')
         if isinstance(response, str):
-            await message.answer(response)
+            return await message.answer(response)
         else:
             if response.status_code == 201:
-                await message.answer('Создано успешно')
+                await state.clear()
+                return await message.answer('Создано успешно')
             else:
-                await message.answer(response.text)
+                return await message.answer(response.text)
 
     @dp.message(F.text == 'Показать все уведомления')
     async def notification_list(message: Message, state: FSMContext):
