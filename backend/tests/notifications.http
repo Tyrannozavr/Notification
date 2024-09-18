@@ -1,7 +1,11 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkbWl2IiwiZXhwIjoxNzI2NjExMjE1fQ.w21Ek9yYInH9yVZXMq0NuyatxxKDAPD5mB-wBtxPdx8
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkbWl2IiwiZXhwIjoxNzI2NjY5MTQ1fQ.zA7fI6cvwAunTc8GPMabQNq-_Jdh1X4Eoy4-aRRzCVs
 GET http://127.0.0.1:8000/api/notifications/
 Authorization: Bearer {{token}}
 ###
+GET http://127.0.0.1:8000/api/notifications/3/
+Authorization: Bearer {{token}}
+###
+
 GET http://127.0.0.1:8000/api/notifications/tags/hello_world/
 Authorization: Bearer {{token}}
 ###

@@ -3,7 +3,7 @@ from typing import List
 from fastapi import Depends, HTTPException, status
 from fastapi.routing import APIRouter
 from sqlalchemy.orm import Session
-from fastapi.responses import JSONResponse
+
 from backend.core.database import get_db  # Assume you have a function to get the DB session
 from backend.core.models import User, Notification, Tag
 from backend.core.schemas import NotificationCreate, NotificationResponse  # Import your schemas
@@ -19,12 +19,20 @@ async def read_notifications(current_user: User = Depends(get_current_user), db:
     return notifications
 
 
+@router.get("/{notification_id}/", response_model=NotificationResponse)
+async def read_notifications(notification_id: int, current_user: User = Depends(get_current_user),
+                             db: Session = Depends(get_db)):
+    notification = db.query(Notification).filter(Notification.owner_id == current_user.id,
+                                                 Notification.id == notification_id).first()
+    return notification
+
+
 @router.get("/tags/{tag_name}/", response_model=List[NotificationResponse])
 async def filter_notifications_by_tag(tag_name: str, current_user: User = Depends(get_current_user),
                                       db: Session = Depends(get_db)):
     tag = db.query(Tag).filter(Tag.name == tag_name).first()
     if not tag:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,)
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, )
     notifications = (db.query(Notification)
                      .filter(Notification.tags.contains(tag),
                              Notification.owner_id == current_user.id).all())
