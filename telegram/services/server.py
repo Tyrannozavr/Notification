@@ -75,3 +75,28 @@ async def post_auth_request(url: str, data: dict, state: FSMContext, user_data: 
     else:
         return response
 
+async def auth_request(url: str, data: dict, state: FSMContext, user_data: dict, type: str) -> Response | str:
+    state_data = await state.get_data()
+    token = state_data.get('access_token')
+    request_url = BASE_URL + url
+    if type == 'get':
+        response = requests.get(request_url, headers={'Authorization': f'Bearer {token}'})
+    elif type == 'delete':
+        response = requests.delete(request_url, json=data, headers={'Authorization': f'Bearer {token}'})
+    elif type == 'post':
+        response = requests.post(request_url, json=data, headers={'Authorization': f'Bearer {token}'})
+    elif type == 'put':
+        response = requests.put(request_url, json=data, headers={'Authorization': f'Bearer {token}'})
+    elif type == 'patch':
+        response = requests.patch(request_url, json=data, headers={'Authorization': f'Bearer {token}'})
+    else:
+        return 'Invalid type'
+    if response.status_code == 401:
+        login_status = await login_account(data=user_data, state=state)
+        if login_status == 'success':
+            return await auth_request(url=url, data=data, state=state, user_data=user_data, type=type)
+        else:
+            return 'Authentication error, link your account'
+    else:
+        return response
+

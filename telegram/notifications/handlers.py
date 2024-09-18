@@ -18,7 +18,7 @@ def register_notification_handlers(dp):
         buttons = []
         for notification in notifications:
             button = InlineKeyboardButton(text=f"test {notification.get('id')} {notification.get('title')}",
-                                             callback_data=f"delete_{notification.get('id')}")
+                                          callback_data=f"delete:{notification.get('id')}")
             buttons.append(button)
 
         builder = InlineKeyboardBuilder()
