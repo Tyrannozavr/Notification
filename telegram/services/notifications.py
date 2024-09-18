@@ -1,8 +1,15 @@
 from aiogram import types
 from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
 
 from telegram.services.server import login_account, get_auth_request
+
+
+class Notification(StatesGroup):
+    title = State()
+    description = State()
+    tags = State()
 
 
 # Create a reply keyboard for notifications
@@ -16,8 +23,13 @@ def create_notification_keyboard():
                                    keyboard=[[button_show, button_create, button_edit, button_delete]])
     return greet_kb
 
+
 async def get_all_notifications(state: FSMContext, user_data: dict) -> list | str:
     notifications = await get_auth_request('notifications', state=state, user_data=user_data)
+    return notifications
+
+async def notifications_list_view(state: FSMContext, user_data: dict) -> list | str:
+    notifications = await get_all_notifications(state, user_data)
     if isinstance(notifications, str):
         return notifications
     return [
@@ -26,4 +38,3 @@ async def get_all_notifications(state: FSMContext, user_data: dict) -> list | st
          f" {' '.join([tag.get('name') for tag in notification.get('tags')])}")
         for notification in notifications
     ]
-
