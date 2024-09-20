@@ -5,7 +5,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from notifications.services import register_notification_callback_query, render_notification
 from services.notifications import render_notification_list, Notification, get_all_notifications, TagSearch
-from services.server import auth_request, get_auth_request
+from services.server import auth_request
 
 
 def register_notification_handlers(dp):
@@ -88,6 +88,7 @@ def register_notification_handlers(dp):
         url = f'notifications/tags/{tag_name}/'
         response = await auth_request(url, state=state,
                                       user_data=message.from_user.__dict__, type='get')
+        await state.clear()
         if response.status_code == 200:
             notifications = response.json()
             if isinstance(notifications, str):

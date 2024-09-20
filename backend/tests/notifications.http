@@ -9,7 +9,7 @@ Accept: application/json
 
 
 ###
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkbWl2IiwiZXhwIjoxNzI2NzMwMzg4fQ.R2G-fUNr14m5KbDoaBDWwbaG8CNfJola0seuuvhmvPI
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkbWl2IiwiZXhwIjoxNzI2ODc4MTQ3fQ.koBpnNZw1FH6BbFDwRGOzcAYq19DAKaXuVou5a1Sxgw
 GET http://127.0.0.1:8000/api/notifications/
 Authorization: Bearer {{token}}
 ###

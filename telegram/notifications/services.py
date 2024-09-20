@@ -66,6 +66,7 @@ def register_notification_callback_query(dp):
             key: value
         }
         notification_id = NotificationEdit.id
+        await state.clear()
         response = await auth_request(url=f'notifications/{notification_id}/', data=data, state=state,
                                       user_data=message.from_user.__dict__, type='patch')
         if response.status_code == 200:
