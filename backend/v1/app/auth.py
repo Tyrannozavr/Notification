@@ -63,7 +63,7 @@ async def login(form_data: UserLogin, db: Session = Depends(get_db)):
 @router.get("/telegram/link")
 def telegram_link(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     link_token = get_or_create_link_token(current_user.id, db)
-    return f"<a href='https://t.me/notification_dmiv_bot?start={link_token}'>Telegram</a>"
+    return f"https://t.me/notification_dmiv_bot?start={link_token}"
 
 
 @router.post("/telegram/link")
