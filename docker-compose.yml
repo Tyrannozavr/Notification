@@ -1,0 +1,39 @@
+services:
+  redis:
+    image: redis
+    container_name:
+      "notification_redis"
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+
+  backend:
+    container_name:
+      "notification_backend"
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    restart: no
+    networks:
+      -  backend
+    expose:
+      - "8000"
+  bot:
+    container_name:
+      "telegram"
+    build:
+      context: telegram
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    restart: always
+    depends_on:
+      - backend
+    networks:
+      -  backend
+
+networks:
+  backend:
+    driver: bridge

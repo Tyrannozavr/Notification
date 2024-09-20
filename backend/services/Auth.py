@@ -8,8 +8,8 @@ import jwt
 from fastapi import Depends
 from fastapi import HTTPException
 from fastapi.security import OAuth2PasswordBearer
-from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
+from passlib.exc import InvalidTokenError
 from sqlalchemy.orm import Session
 from starlette import status
 

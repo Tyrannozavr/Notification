@@ -100,7 +100,6 @@ def register_notification_handlers(dp):
                 return await message.answer("Нет уведомлений.")
         else:
             return await message.answer(response.text)
-        # return await message.answer("search for" + tag_name)
 
     @dp.message(F.text == 'Редактировать уведомление')
     async def editable_notification_list(message: Message, state: FSMContext):
