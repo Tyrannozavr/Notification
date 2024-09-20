@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   redis:
     image: redis
@@ -17,9 +19,12 @@ services:
       - .env
     restart: no
     networks:
-      -  backend
+      - backend
+      - db
     expose:
       - "8000"
+    depends_on:
+      - db
   bot:
     container_name:
       "telegram"
@@ -32,8 +37,27 @@ services:
     depends_on:
       - backend
     networks:
-      -  backend
+      - backend
+
+  db:
+    image: postgres:latest
+    container_name: postgres_container
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    env_file:
+      - .env
+    ports:
+      - "5430:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data/pgdata
+    networks:
+      - db
 
 networks:
   backend:
+    driver: bridge
+  db:
     driver: bridge
