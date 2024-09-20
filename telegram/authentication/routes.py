@@ -11,20 +11,29 @@ def register_authentication_handlers(dp):
     @dp.message(Registration.username)
     async def set_username(message: Message, state: FSMContext):
         username = message.text
-        Registration.username = username
-        await message.answer(f'Здравствуйте {username} введите пароль:')
+        await state.update_data(username=username)  # Store username in state
+        await message.answer(f'Здравствуйте {username}, введите пароль:')
+        # await Registration.password.set()  # Move to password state
         await state.set_state(Registration.password)
 
     @dp.message(Registration.password)
     async def set_password(message: Message, state: FSMContext):
         password = message.text
-        Registration.password = password
-        response = register_account(username=Registration.username, password=password)
-        await state.clear()
+        user_data = await state.get_data()  # Retrieve user data from state
+        username = user_data.get('username')  # Get the stored username
+
+        response = register_account(username=username, password=password)
+
         if response.status_code == 201:
+            await state.clear()  # Clear the state
             access_token = response.json().get('access_token')
             await set_access_token(token=access_token, state=state)
-            return message.answer("Аккаунт создан успешно, удалите пожалуйста сообщение с паролем",
-                                  reply_markup=create_notification_keyboard())
+            await message.answer("Аккаунт создан успешно, удалите пожалуйста сообщение с паролем",
+                                 reply_markup=create_notification_keyboard())
         else:
-            return message.answer(response.text)
+            if 'detail' in response.json():
+                await message.answer('Выберите другое имя, это уже занято')
+                await state.set_state(Registration.username)  # Go back to username state
+            else:
+                await message.answer('Произошла ошибка при регистрации. Попробуйте еще раз.')
+
