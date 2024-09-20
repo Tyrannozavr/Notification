@@ -9,7 +9,6 @@ from fastapi import Depends
 from fastapi import HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
-from passlib.exc import InvalidTokenError
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -102,7 +101,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Se
         if username is None:
             raise credentials_exception
         token_data = TokenData(username=username)
-    except InvalidTokenError:
+    except:
         raise credentials_exception
     user = get_user_by_username(db=db, username=username)
     if user is None:
