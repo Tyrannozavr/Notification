@@ -74,9 +74,9 @@ def register_notification_callback_query(dp):
                         f"Заголовок: {notification.get('title')} \n"
                         f"Описание: {notification.get('description')} \n"
                         f"Тэги: {' '.join([tag.get('name') for tag in notification.get('tags', [])])}")
-            return message.answer(response)
+            return await message.answer(response)
         else:
-            return message.answer(response.text)
+            return await message.answer(response.text)
 
 def render_notification(notification: dict) -> str:
     return (f"{notification.get('title')} \n "

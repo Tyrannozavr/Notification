@@ -64,13 +64,14 @@ def register_notification_handlers(dp):
 
     @dp.message(F.text == 'Показать все уведомления')
     async def notification_list(message: Message, state: FSMContext):
-        notifications = await get_auth_request('notifications', state=state, user_data=message.from_user.__dict__)
+        notifications = await auth_request('notifications', state=state,
+                                           user_data=message.from_user.__dict__, type='get')
         if isinstance(notifications, str):
             return notifications
         if isinstance(notifications, str):
             return await message.answer(notifications)
         if notifications:
-            notification_response = await render_notification_list(notifications)
+            notification_response = await render_notification_list(notifications.json())
             return await message.answer("\n".join(notification_response))
         else:
             return await message.answer("Нет уведомлений.")
