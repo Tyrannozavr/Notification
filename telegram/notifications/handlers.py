@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from notifications.services import register_notification_callback_query, render_notification
+from notifications.routes import register_notification_callback_query, render_notification
 from services.notifications import render_notification_list, Notification, get_all_notifications, TagSearch
 from services.server import auth_request
 

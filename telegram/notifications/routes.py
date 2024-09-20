@@ -6,8 +6,6 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from services.notifications import NotificationEdit
 from services.server import auth_request
 
-
-
 notification_dictionary = {
     "title": "Заголовок",
     "description": "Описание",
@@ -78,6 +76,7 @@ def register_notification_callback_query(dp):
             return await message.answer(response)
         else:
             return await message.answer(response.text)
+
 
 def render_notification(notification: dict) -> str:
     return (f"{notification.get('title')} \n "

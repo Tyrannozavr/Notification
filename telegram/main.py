@@ -9,8 +9,10 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+from authentication.routes import register_authentication_handlers
 from data import BOT_TOKEN
 from notifications.handlers import register_notification_handlers
+from services.Authentication import Registration
 from services.notifications import create_notification_keyboard
 from services.server import link_account, login_account
 
@@ -19,23 +21,26 @@ from services.server import link_account, login_account
 dp = Dispatcher(storage=MemoryStorage())
 
 @dp.message(CommandStart())
-async def command_start_handler(message: Message):
+async def command_start_handler(message: Message, state: FSMContext):
     """
     This handler receives messages with `/start` command
     """
     if len(message.text.split()) == 1:
-        await message.answer('Log in to your account on the website')
-    access_token = message.text.split(' ')[1]
-    builder = InlineKeyboardBuilder()
-    builder.add(types.InlineKeyboardButton(
-        text="Нажми меня",
-        callback_data=f"link_token:{access_token}",
-    )
-    )
-    await message.answer(
-        "Чтобы привязать аккаунт нажмите кнопку",
-        reply_markup=builder.as_markup()
-    )
+        await message.answer("Введите ваше имя")
+        await state.set_state(Registration.username)
+        # await message.answer('Log in to your account on the website')
+    else:
+        access_token = message.text.split(' ')[1]
+        builder = InlineKeyboardBuilder()
+        builder.add(types.InlineKeyboardButton(
+            text="Нажми меня",
+            callback_data=f"link_token:{access_token}",
+        )
+        )
+        await message.answer(
+            "Чтобы привязать аккаунт нажмите кнопку",
+            reply_markup=builder.as_markup()
+        )
 
 
 @dp.callback_query(F.data.startswith("link_token:"))
@@ -57,6 +62,7 @@ async def link_account_handler(callback: types.CallbackQuery, state: FSMContext)
         await callback.message.answer(response_text)
 
 register_notification_handlers(dp)
+register_authentication_handlers(dp)
 
 async def main() -> None:
     # Initialize Bot instance with default bot properties which will be passed to all API calls

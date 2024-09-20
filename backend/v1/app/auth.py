@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from fastapi import HTTPException
+from fastapi import status
 from fastapi.params import Depends
 from fastapi.routing import APIRouter
 from sqlalchemy.orm.session import Session
@@ -17,7 +18,7 @@ from services.Auth import create_access_token, verify_password, get_password_has
 router = APIRouter()
 
 
-@router.post("/register/")
+@router.post("/register/", status_code=status.HTTP_201_CREATED)
 def register_user(user: UserLogin, db: Session = Depends(get_db)):
     # Hash password here (use your preferred hashing method)
     existing_user = get_user_by_username(db, user.username)
@@ -62,6 +63,7 @@ async def login(form_data: UserLogin, db: Session = Depends(get_db)):
 
 @router.get("/telegram/link")
 def telegram_link(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """provides a link to our telegram bot which allows user to bind telegram to existing user"""
     link_token = get_or_create_link_token(current_user.id, db)
     return f"https://t.me/notification_dmiv_bot?start={link_token}e"
 
@@ -96,5 +98,6 @@ async def telegram_login(payload: Payload, db: Session = Depends(get_db)):
         user = db.query(User).filter(User.telegram_id == user_data['id']).first()
         if not user:
             raise HTTPException(status_code=401, detail="Link you telegram to website's account")
-        access_token = get_access_token_by_username(username=user.username)
+        username = str(user.username)
+        access_token = get_access_token_by_username(username=username)
         return {'access': access_token}
