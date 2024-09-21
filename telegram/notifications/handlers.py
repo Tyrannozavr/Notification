@@ -68,10 +68,7 @@ def register_notification_handlers(dp):
                                            user_data=message.from_user.__dict__, method='get')
         if isinstance(notifications, str):
             return notifications
-        if isinstance(notifications, str):
-            return await message.answer(notifications)
-        print(notifications, bool(notifications), type(notifications))
-        if notifications:
+        if notifications.json():
             notification_response = await render_notification_list(notifications.json())
 
             return await message.answer("\n".join(notification_response))
