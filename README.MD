@@ -16,6 +16,8 @@ and gave them such privileges (or run using sudo, for example) and run this comm
 ```shell script
 docker compose up -d --build
 ```
-
+# Usage
+You can use both - website (ready only api) or telegram only, you can register account after click start or you can get 
+a link to bind you existing account to telegram
 
 
