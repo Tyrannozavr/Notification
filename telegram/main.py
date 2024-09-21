@@ -45,9 +45,9 @@ async def command_start_handler(message: Message, state: FSMContext):
 
 @dp.callback_query(F.data.startswith("link_token:"))
 async def link_account_handler(callback: types.CallbackQuery, state: FSMContext):
-    access_token = callback.data.split(':')[1]
+    link_token = callback.data.split(':')[1]
     user_data = callback.from_user.__dict__
-    data = {**user_data, "link_token": access_token}
+    data = {**user_data, "link_token": link_token}
     response = link_account(data=data, bot_token=BOT_TOKEN)
     if response == 'success':
         await callback.message.edit_reply_markup(reply_markup=None)

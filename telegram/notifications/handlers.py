@@ -52,7 +52,7 @@ def register_notification_handlers(dp):
             "tags": user_data["tags"],
         }
         response = await auth_request(url='notifications/', data=data, state=state,
-                                      user_data=message.from_user.__dict__, type='post')
+                                      user_data=message.from_user.__dict__, method='post')
         if isinstance(response, str):
             return await message.answer(response)
         else:
@@ -65,13 +65,15 @@ def register_notification_handlers(dp):
     @dp.message(F.text == 'Показать все уведомления')
     async def notification_list(message: Message, state: FSMContext):
         notifications = await auth_request('notifications', state=state,
-                                           user_data=message.from_user.__dict__, type='get')
+                                           user_data=message.from_user.__dict__, method='get')
         if isinstance(notifications, str):
             return notifications
         if isinstance(notifications, str):
             return await message.answer(notifications)
+        print(notifications, bool(notifications), type(notifications))
         if notifications:
             notification_response = await render_notification_list(notifications.json())
+
             return await message.answer("\n".join(notification_response))
         else:
             return await message.answer("Нет уведомлений.")
@@ -87,7 +89,7 @@ def register_notification_handlers(dp):
         tag_name = tag_name[1:]
         url = f'notifications/tags/{tag_name}/'
         response = await auth_request(url, state=state,
-                                      user_data=message.from_user.__dict__, type='get')
+                                      user_data=message.from_user.__dict__, method='get')
         await state.clear()
         if response.status_code == 200:
             notifications = response.json()

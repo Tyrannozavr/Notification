@@ -18,14 +18,14 @@ def register_notification_callback_query(dp):
     async def delete_notification_callback(callback: types.CallbackQuery, state: FSMContext):
         notification_id = callback.data.split(':')[1]
         await auth_request(url=f'notifications/{notification_id}', data={}, state=state,
-                           user_data=callback.from_user.__dict__, type='delete')
+                           user_data=callback.from_user.__dict__, method='delete')
         return await callback.message.answer(text=f"Удалено {notification_id}")
 
     @dp.callback_query(F.data.startswith("edit:"))
     async def edit_notification_callback(callback: types.CallbackQuery, state: FSMContext):
         notification_id = callback.data.split(':')[1]
         response = await auth_request(url=f'notifications/get/{notification_id}', data={}, state=state,
-                                      user_data=callback.from_user.__dict__, type='get')
+                                      user_data=callback.from_user.__dict__, method='get')
         if response.status_code == 200:
             notification = response.json()
             btns = []
@@ -66,7 +66,7 @@ def register_notification_callback_query(dp):
         notification_id = NotificationEdit.id
         await state.clear()
         response = await auth_request(url=f'notifications/{notification_id}/', data=data, state=state,
-                                      user_data=message.from_user.__dict__, type='patch')
+                                      user_data=message.from_user.__dict__, method='patch')
         if response.status_code == 200:
             notification = response.json()
             response = (f"Успешно отредактировано! \n"

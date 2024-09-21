@@ -2,9 +2,9 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from data import BOT_TOKEN
-from services.Authentication import Registration, set_access_token
+from services.Authentication import Registration, set_access_token, get_access_token
 from services.notifications import create_notification_keyboard
-from services.server import register_account
+from services.server import register_account_request, complete_registration
 
 
 def register_authentication_handlers(dp):
@@ -29,14 +29,21 @@ def register_authentication_handlers(dp):
         if password is None:
             password = message.text
             await state.update_data(password=password)
-        response = register_account(username=username, password=password)
+        response = register_account_request(username=username, password=password)
 
         if response.status_code == 201:
-            await state.clear()  # Clear the state
             access_token = response.json().get('access_token')
-            await set_access_token(token=access_token, state=state)
-            await message.answer("Аккаунт создан успешно, удалите пожалуйста сообщение с паролем",
-                                 reply_markup=create_notification_keyboard())
+            state = await set_access_token(token=access_token, state=state)
+            is_telegram_linked = await complete_registration(state=state, user_data=message.from_user.__dict__)
+            await state.clear()  # Clear the state
+            if is_telegram_linked == 'success':
+                await message.answer("Аккаунт создан успешно, удалите пожалуйста сообщение с паролем",
+                                     reply_markup=create_notification_keyboard())
+            else:
+                await message.answer("Аккаунт создан успешно, но не удалось привязать аккаунт телеграм к "
+                                     "существующему аккаунту, удалите пожалуйста сообщение с паролем и попробуйте "
+                                     "получить ссылку на привязку акканут на нашем веб сайте",
+                                     reply_markup=create_notification_keyboard())
         else:
             if 'detail' in response.json():
                 await message.answer('Выберите другое имя, это уже занято')

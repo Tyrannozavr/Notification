@@ -9,7 +9,7 @@ class Registration(StatesGroup):
 
 async def set_access_token(token, state: FSMContext):
     await state.update_data({'token': token})
-    return token
+    return state
 
 async def get_access_token(state: FSMContext):
     data = await state.get_data()
