@@ -35,7 +35,7 @@ def create_notification_keyboard():
 
 async def get_all_notifications(state: FSMContext, user_data: dict) -> list | str:
     notifications = await auth_request('notifications', state=state, user_data=user_data, method='get')
-    return notifications
+    return notifications.json()
 
 async def render_notification_list(notifications: List[dict]) -> list:
     return [
