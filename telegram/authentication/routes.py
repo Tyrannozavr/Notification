@@ -17,7 +17,7 @@ authentication_router = Router()
 
 @authentication_router.errors()
 async def error_handler(exception: types.ErrorEvent) -> Any:
-    logger.error(f"Error in notifications application {exception}")
+    logger.error(f"Error in authentication application {exception.exception} \n Traceback: {exception.traceback} \n Error: {exception}")
 
 @authentication_router.message(Registration.username)
 async def set_username(message: Message, state: FSMContext):

@@ -14,7 +14,7 @@ notification_router = Router()
 
 @notification_router.errors()
 async def error_handler(exception: types.ErrorEvent) -> Any:
-    logger.error(f"Error in notifications application {exception}")
+    logger.error(f"Error in notifications application {exception.exception} \n Traceback: {exception.traceback} \n Error: {exception}")
 
 @notification_router.message(F.text == 'Показать все уведомления')
 async def notification_list(message: Message, state: FSMContext):
