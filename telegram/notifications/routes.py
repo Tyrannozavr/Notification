@@ -3,8 +3,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from services.notifications import NotificationEdit
-from services.server import auth_request
+from notifications.services import NotificationEdit
+from services.requests import auth_request
 
 notification_dictionary = {
     "title": "Заголовок",

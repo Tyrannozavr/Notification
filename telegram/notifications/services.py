@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
-from services.server import auth_request
+from services.requests import auth_request
 
 
 class Notification(StatesGroup):
@@ -44,4 +44,5 @@ async def render_notification_list(notifications: List[dict]) -> list:
          f" {' '.join([tag.get('name') for tag in notification.get('tags')])}")
         for notification in notifications
     ]
+
 
