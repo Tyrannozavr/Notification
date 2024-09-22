@@ -1,3 +1,5 @@
+from typing import Any
+
 from aiogram import types, F, Router
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
@@ -7,11 +9,15 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from authentication.services import Registration
 from authentication.services import register_account_request, complete_registration, link_account
 from data import BOT_TOKEN
+from logger import logger
 from notifications.services import create_notification_keyboard
 from services.requests import set_access_token, login_account
 
 authentication_router = Router()
 
+@authentication_router.errors()
+async def error_handler(exception: types.ErrorEvent) -> Any:
+    logger.error(f"Error in notifications application {exception}")
 
 @authentication_router.message(Registration.username)
 async def set_username(message: Message, state: FSMContext):

@@ -1,14 +1,20 @@
-from aiogram import F, Router
+from typing import Any
+
+from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+from logger import logger
 from notifications.routes import render_notification
 from notifications.services import render_notification_list, Notification, get_all_notifications, TagSearch
 from services.requests import auth_request
 
 notification_router = Router()
 
+@notification_router.errors()
+async def error_handler(exception: types.ErrorEvent) -> Any:
+    logger.error(f"Error in notifications application {exception}")
 
 @notification_router.message(F.text == 'Показать все уведомления')
 async def notification_list(message: Message, state: FSMContext):
