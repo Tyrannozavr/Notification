@@ -11,7 +11,7 @@ POSTGRES_USER = os.getenv('POSTGRES_USER')
 POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
 POSTGRES_DB = os.getenv('POSTGRES_DB')
 POSTGRES_SERVER = os.getenv('POSTGRES_SERVER')
-DATABASE_URL = os.getenv("SQLALCHEMY_DATABASE_URL")
+DATABASE_URL = os.getenv("SQLALCHEMY_DATABASE_URL", 'postgresql://postgres_user:postgres_strong_password@127.0.0.1:5432/postgres_db')
 # DATABASE_URL = "sqlite:///./sql_app.db"
 engine = create_engine(
     DATABASE_URL
