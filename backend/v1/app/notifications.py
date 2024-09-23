@@ -13,7 +13,6 @@ from services.notifications import create_notification, update_notification
 
 router = APIRouter()
 
-
 @router.get("/", response_model=List[NotificationResponse])
 async def read_notifications(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     notifications = db.query(Notification).filter(Notification.owner_id == current_user.id).all()
