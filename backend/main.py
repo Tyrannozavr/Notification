@@ -2,6 +2,7 @@ from urllib.request import Request
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
 from core.database import init_db
@@ -15,6 +16,15 @@ init_db()
 
 app.include_router(api_router, prefix="/api", tags=["api"])
 
+
+# Allow CORS for all origins (adjust as needed)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Or specify your frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allows all headers
+)
 # Dependency to get the DB session
 
 # Custom exception handler
