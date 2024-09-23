@@ -6,7 +6,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 
 from authentication.routes import authentication_router
 from data import BOT_TOKEN
-from notifications.handlers import notification_router
+from notifications.routes import notification_router
 
 # All handlers should be attached to the Router (or Dispatcher)
 
