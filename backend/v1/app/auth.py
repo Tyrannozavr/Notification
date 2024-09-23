@@ -94,8 +94,8 @@ async def telegram_login(payload: Payload, db: Session = Depends(get_db)):
     is_from_telegram = check_telegram_authorization(auth_data=payload.data, bot_token=BOT_TOKEN)
     if is_from_telegram:
         user_data = payload.data
-        user_telegram_id = user_data.get('id')
-        user = db.query(User).filter(User.telegram_id == user_data['id']).first()
+        user_telegram_id = str(user_data.get('id'))
+        user = db.query(User).filter(User.telegram_id == user_telegram_id).first()
         if not user:
             raise HTTPException(status_code=401, detail="Link you telegram to website's account")
         username = str(user.username)

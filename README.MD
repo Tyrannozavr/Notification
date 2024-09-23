@@ -17,7 +17,11 @@ and gave them such privileges (or run using sudo, for example) and run this comm
 docker compose up -d --build
 ```
 # Usage
-You can use both - website (ready only api) or telegram only, you can register account after click start or you can get 
-a link to bind you existing account to telegram
-
-
+You can use both - website (only for registration and more easy passage to telegram) or telegram only.
+## Website
+#### You can register you account and after registration there will be a link to go to telegram (this way you can scip the registration and immediately start to use you account)
+##### The layout to this is in backend/templates/register.html
+## Telegram only
+#### You can register you account directly in telegram and after that start to use your account 
+## Notifications 
+#### It doesn't matter which way did you choose, If the registration and binding completed successfully you will see four buttons - to get notification, update notification, delete notification and create notification

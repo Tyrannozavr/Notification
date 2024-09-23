@@ -21,8 +21,8 @@ services:
     networks:
       - backend
       - db
-    expose:
-      - "8000"
+    ports:
+      - "8000:8000"
     depends_on:
       - db
   bot:
@@ -33,6 +33,8 @@ services:
       dockerfile: Dockerfile
     env_file:
       - .env
+    environment:
+      - BASE_URL=http://backend:8000/api/
     restart: always
     depends_on:
       - backend
@@ -50,7 +52,7 @@ services:
     env_file:
       - .env
     ports:
-      - "5430:5432"
+      - "5432:5432"
     volumes:
       - ./pgdata:/var/lib/postgresql/data/pgdata
     networks:

@@ -5,18 +5,17 @@ from datetime import datetime, timezone, timedelta
 from typing import Annotated
 
 import jwt
+from core import settings
+from core.database import get_db
+from core.models import User, LinkToken
+from core.schemas import TokenData
+from core.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 from fastapi import Depends
 from fastapi import HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from starlette import status
-
-from core import settings
-from core.database import get_db
-from core.models import User, LinkToken
-from core.schemas import TokenData
-from core.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
