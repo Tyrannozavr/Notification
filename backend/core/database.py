@@ -7,13 +7,12 @@ from dotenv import load_dotenv
 
 load_dotenv('../.env')
 
-# SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
 POSTGRES_USER = os.getenv('POSTGRES_USER')
 POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
 POSTGRES_DB = os.getenv('POSTGRES_DB')
 POSTGRES_SERVER = os.getenv('POSTGRES_SERVER')
-# SQLALCHEMY_DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}/{POSTGRES_DB}"
 DATABASE_URL = os.getenv("SQLALCHEMY_DATABASE_URL")
+# DATABASE_URL = "sqlite:///./sql_app.db"
 engine = create_engine(
     DATABASE_URL
 )
