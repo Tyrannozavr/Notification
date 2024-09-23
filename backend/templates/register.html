@@ -11,6 +11,7 @@
             padding: 20px;
             background-color: #f4f4f4;
         }
+
         .container {
             max-width: 400px;
             margin: auto;
@@ -19,9 +20,11 @@
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
         h2 {
             text-align: center;
         }
+
         input[type="text"], input[type="email"], input[type="password"] {
             width: 100%;
             padding: 10px;
@@ -29,6 +32,7 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+
         button {
             width: 100%;
             padding: 10px;
@@ -38,9 +42,11 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
         button:hover {
             background-color: #218838;
         }
+
         .error {
             color: red;
             text-align: center;
@@ -57,10 +63,11 @@
         <button type="submit">Register</button>
     </form>
     <div class="error" id="error-message"></div>
+    <div class="success" id="success-message"></div>
 </div>
 
 <script>
-    document.getElementById('registerForm').addEventListener('submit', async function(event) {
+    document.getElementById('registerForm').addEventListener('submit', async function (event) {
         event.preventDefault(); // Prevent form from submitting the traditional way
 
         const username = document.getElementById('username').value;
@@ -72,7 +79,7 @@
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({username, password}),
             });
 
 
@@ -83,13 +90,46 @@
             }
 
             const data = await response.json();
-            console.log(data)
             const token = data.access_token; // Assuming the response contains a token
 
             // Save token to localStorage
             localStorage.setItem('token', token);
 
             alert('Registration successful!');
+
+
+            // Make GET request to link Telegram account
+            const linkResponse = await fetch('http://127.0.0.1:8000/api/auth/telegram/link/', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+            });
+
+            if (!linkResponse.ok) {
+                let linkData = await linkResponse.json();
+                let linkDetail = linkData.detail || 'Unknown error';
+                throw new Error('Failed to get Telegram link: ' + linkDetail);
+            }
+
+            const telegramLink = await linkResponse.json();
+            if (telegramLink) {
+                if (telegramLink) {
+                    // Create an anchor element
+                    const linkElement = document.createElement("a");
+                    linkElement.href = telegramLink; // Set the href attribute
+                    linkElement.target = "_blank"; // Open link in a new tab
+                    linkElement.textContent = "Link your account to Telegram"; // Set the text content
+
+                    // Append the link to a specific container in your HTML
+                    const successMessageContainer = document.getElementById('success-message');
+                    successMessageContainer.innerHTML = ''; // Clear any previous messages
+                    successMessageContainer.appendChild(linkElement); // Append the new link element
+                } else {
+                    console.error("Telegram link not found.");
+                }
+            }
+
         } catch (error) {
             document.getElementById('error-message').innerText = error.message;
         }
